@@ -1,0 +1,347 @@
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Copyright 2019, 2021 NXP
+ */
+
+/ {
+    signature {
+    	bootph-pre-ram;
+        key-platform {
+        	bootph-pre-ram;
+            required = "conf";
+            algo = "sha256,rsa4096";
+            rsa,r-squared = <
+				0xbc2f0987 0xf92cc3ab 0x7558df94 0xc2c4d80f
+				0x2d0801fe 0xb38ff241 0x5efbe39d 0x8e774316
+				0x92071b95 0x934ea580 0x3343c199 0xb163d372
+				0x1d2b8ade 0xb0b2bbef 0x03700b82 0x6f3293e2
+				0x73021ef4 0xc4cac347 0x258176b4 0xd69b6d25
+				0x5fe24b68 0xcca20f7d 0xdbba7200 0xd70d78d3
+				0x43bd14eb 0xf75acf87 0x3a3769fc 0x93a7e202
+				0x080969e2 0x0777ab1c 0xb92bdcfb 0xf96d0cc5
+				0x4abb3ff1 0x5898f380 0x8d90511d 0x59ef07fa
+				0x31e6bb1d 0xe1964e23 0xfbd325d0 0x8b401b37
+				0x06bc0019 0x3bc7c709 0x95981c9b 0x2fb46888
+				0x80ed7933 0x2b72c877 0xbc209338 0x38d24c96
+				0x1a16e596 0xa2536af9 0x09505a6d 0xdf0aa8a0
+				0x2304ea2e 0xe92941ac 0x5702b6c0 0x05f96e2a
+				0x9be78daf 0x72fc8ccb 0x8d153b97 0x6a3e3763
+				0x3b8640c6 0x73f2df13 0x46d6be6e 0x6195c4fa
+				0x78374d77 0x38b02989 0x39fd565b 0xbe7173e1
+				0x20efe5d2 0x67cb556e 0x835be3ad 0x690557ca
+				0xd801630c 0xbc29c479 0x70a23cb9 0x2518243d
+				0xa1f7cf0b 0xebd35d31 0xed78bb1c 0x4806cdfd
+				0xb006af9b 0x6933be3f 0xf8c509c3 0xba64f7b4
+				0x4d45f772 0x9ba77b5a 0xd111b13a 0x32614a63
+				0xedaad42e 0x97cb633e 0xfab07c9b 0xd83163c6
+				0x7df71422 0xc1055907 0xbc003f68 0xd8a5bf98
+				0x35128a1f 0xe627d6b1 0xe12c8f82 0x9a6879f9
+				0xa63d9f25 0x031316e9 0x342519ee 0x52eaf59e
+				0x112f1e24 0x78d35c6f 0xcd573a71 0x03e8b99a
+				0x31c693c7 0x5e84a3f3 0x2cdcfe14 0xafeaddbb
+				0x8cac003b 0x7a2d727e 0xe51e125a 0xf558c5c0
+				0x90398657 0xcdc23841 0x85e73579 0x1766de5d
+				0x00799b65 0x742c50af 0x3bf52e0d 0x0e74aca5
+				0x8410b8fc 0x3cc00c49 0x353002fb 0x00a54769
+			>;
+            rsa,modulus = <
+            	0xc8645909 0x3dd14fa7 0x671d6772 0xeb2250d1
+            	0x491453c2 0x62676ca8 0x7c6393ac 0xb72bf039
+            	0x4f08eb1e 0xae70c719 0x75b9adc7 0xd8cd50d8
+            	0xf674f30c 0x80e4c87e 0x8804aaed 0x41fd2be8
+            	0x7275d239 0xfb49ba6f 0x282964cc 0xa6b84ca5
+            	0xd4f5b0c7 0x87b0bd90 0x1a1a7929 0xc211ba4a
+            	0x85a4be55 0x1cadf5ef 0xc475ddb3 0x4f2d1621
+            	0x7be667eb 0x7db09e0f 0x59457401 0x80ee6f4f
+            	0x1393024e 0xb51daa5e 0x1bbaeaf2 0xa54d77b0
+            	0xd38b5631 0xb4f58509 0x3d5af641 0x220fd5bc
+            	0xd4917b23 0x5d2389bc 0x5fdc92ab 0x1879ccd1
+            	0x1e991ac2 0x392c38ad 0x55a23c46 0xdd5bef69
+            	0x21bf1d47 0xdc117930 0x61a3337b 0x93f9a53a
+            	0x77e41b7a 0x9b0d4304 0x8bd36528 0xc4d9ba75
+            	0xfb4a6453 0x56088c26 0xc9de234b 0xf1fe5bc9
+            	0x0477ee0c 0x6d6bba28 0x6b7ef874 0xfa8b5285
+            	0x4e1f6c27 0xfea37cae 0x085134cc 0xac3f9375
+            	0xdd1d3614 0x59bf357e 0x8ab32fba 0xeb155869
+            	0x574a137a 0x33bc7d65 0xfeb030c8 0x88162eb1
+            	0x9653afaa 0x3d5c8bd0 0x8eb0b724 0x7868e3e5
+            	0x022c460b 0x6cb97f49 0xb881d116 0xf4dc4852
+            	0xe4e2cbf3 0x6394f740 0xa8f33e4f 0xc3a198a9
+            	0x7c3614da 0x8024d43c 0x947d62a7 0x8a174516
+            	0x3d132e58 0xa9c70665 0x67974cf7 0x2aba55c7
+            	0xbba5001b 0xe63973d7 0x85ec6286 0xdb2e6808
+            	0xa1d98d4f 0xf67547f3 0x99c463c9 0x40b50fee
+            	0x172f7a40 0x6a16166c 0xe686a650 0x46e42e62
+            	0xe856fff8 0x12ac4a20 0x5d1d82ba 0x2597ecc6
+            	0x52fb1773 0x2c4c0fbb 0xfede60e1 0x074484f2
+            	0xf1664094 0x05f88b43 0xd18551e9 0x4721cc29
+            	0x8e242581 0xdd50ef91 0x14766a2e 0x358d8991
+            	0x5f0ef2cd 0x0521c570 0x5daf74a5 0xe0196013
+            >;
+            rsa,exponent = <0x00000000 0x00010001>;
+            rsa,n0-inverse = <0x4a5695e5>;
+            rsa,num-bits = <0x00001000>;
+            key-name-hint = "platform";
+        };
+    };
+
+
+	wdt-reboot {
+		compatible = "wdt-reboot";
+		wdt = <&wdog1>;
+		bootph-pre-ram;
+	};
+
+	binman: binman {
+		multiple-images;
+		u-boot-spl-ddr {
+			filename = "u-boot-spl-ddr.bin";
+			pad-byte = <0xff>;
+			align-size = <4>;
+			align = <4>;
+			u-boot-spl {
+				align-end = <4>;
+				filename = "u-boot-spl.bin";
+			};
+			ddr-1d-imem-fw {
+				filename = "lpddr4_pmu_train_1d_imem.bin";
+				type = "blob-ext";
+				align-end = <4>;
+				size = <0x8000>;
+				pad-byte = <0x00>;
+			};
+			ddr-1d-dmem-fw {
+				filename = "lpddr4_pmu_train_1d_dmem.bin";
+				type = "blob-ext";
+				align-end = <4>;
+				size = <0x4000>;
+				pad-byte = <0x00>;
+			};
+			ddr-2d-imem-fw {
+				filename = "lpddr4_pmu_train_2d_imem.bin";
+				type = "blob-ext";
+				align-end = <4>;
+				size = <0x8000>;
+				pad-byte = <0x00>;
+			};
+			ddr-2d-dmem-fw {
+				filename = "lpddr4_pmu_train_2d_dmem.bin";
+				type = "blob-ext";
+				align-end = <4>;
+			};
+		};
+		spl {
+			filename = "spl.img";
+			mkimage {
+				args = "-n spl/u-boot-spl.cfgout -T imx8mimage -e 0x912000";
+				blob {
+					filename = "u-boot-spl-ddr.bin";
+				};
+			};
+		};
+		itb {
+			filename = "u-boot.itb";
+			align-size = <4096>;
+			fit {
+				description = "Configuration to load ATF before U-Boot";
+				fit,fdt-list = "of-list";
+				#address-cells = <1>;
+				images {
+					uboot {
+						arch = "arm64";
+						compression = "none";
+						description = "U-Boot (64-bit)";
+						load = <CONFIG_TEXT_BASE>;
+						type = "standalone";
+						uboot-blob {
+							filename = "u-boot-nodtb.bin";
+							type = "blob-ext";
+						};
+					};
+					atf {
+						arch = "arm64";
+						compression = "none";
+						description = "ARM Trusted Firmware";
+						entry = <0x960000>;
+						load = <0x960000>;
+						type = "firmware";
+						atf-blob {
+							type = "atf-bl31";
+						};
+					};
+					binman_fip: fip {
+						arch = "arm64";
+						compression = "none";
+						description = "Trusted Firmware FIP";
+						load = <0x40310000>;
+						type = "firmware";
+					};
+					tee {
+						arch = "arm64";
+						compression = "none";
+						description = "TEE os";
+						entry = <0x56000000>;
+						load = <0x56000000>;
+						type = "firmware";
+						tee-blob {
+							type = "tee-os";
+							filename = "tee-pager_v2.bin";
+						};
+					};
+					@fdt-SEQ {
+						compression = "none";
+						description = "NAME";
+						type = "flat_dt";
+						uboot-fdt-blob {
+							filename = "u-boot.dtb";
+							type = "blob-ext";
+						};
+					};
+				};
+				configurations {
+					default = "@config-DEFAULT-SEQ";
+					binman_configuration: @config-SEQ {
+						description = "NAME";
+						fdt = "fdt-SEQ";
+						firmware = "uboot";
+						loadables = "atf", "tee";
+					};
+				};
+			};
+		};
+	};
+};
+
+&ecspi1 {
+	bootph-pre-ram;
+};
+
+&pinctrl_ecspi1 {
+	bootph-pre-ram;
+};
+
+&flash0 {
+	bootph-pre-ram;
+	partitions {
+		bootph-pre-ram;
+		platform@1D0000 {
+			bootph-pre-ram;
+		};
+		u-boot@40000 {
+			bootph-pre-ram;
+			read-only;
+		};
+		u-boot-second@240000 {
+			bootph-pre-ram;
+			read-only;
+		};
+	};
+};
+
+&{/soc@0/bus@30800000/i2c@30a20000/bd71850@4b} {
+	bootph-pre-ram;
+};
+
+&{/soc@0/bus@30800000/i2c@30a20000/bd71850@4b/regulators} {
+	bootph-pre-ram;
+};
+
+&i2c1 {
+	bootph-pre-ram;
+};
+
+&pinctrl_i2c1 {
+	bootph-pre-ram;
+};
+
+&pinctrl_i2c1_gpio {
+	bootph-pre-ram;
+};
+
+&pinctrl_pmic {
+	bootph-pre-ram;
+};
+
+&{/soc@0} {
+	bootph-pre-ram;
+};
+
+&spba1 {
+	bootph-pre-ram;
+};
+
+&clk {
+	bootph-pre-ram;
+};
+
+&osc_24m {
+	bootph-pre-ram;
+};
+
+&osc_32k {
+	bootph-pre-ram;
+};
+
+&aips1 {
+	bootph-pre-ram;
+};
+
+&aips3 {
+	bootph-pre-ram;
+};
+
+&iomuxc {
+	bootph-pre-ram;
+};
+
+&pinctrl_uart2 {
+	bootph-pre-ram;
+};
+
+&pinctrl_wdog {
+	bootph-pre-ram;
+};
+
+&gpio1 {
+	bootph-pre-ram;
+};
+
+&gpio2 {
+	bootph-pre-ram;
+};
+
+&gpio3 {
+	bootph-pre-ram;
+};
+
+&gpio4 {
+	bootph-pre-ram;
+};
+
+&gpio5 {
+	bootph-pre-ram;
+};
+
+&uart2 {
+	bootph-pre-ram;
+};
+
+&crypto {
+	bootph-pre-ram;
+};
+
+&sec_jr0 {
+	bootph-pre-ram;
+};
+
+&sec_jr1 {
+	bootph-pre-ram;
+};
+
+&sec_jr2 {
+	bootph-pre-ram;
+};
+
+&wdog1 {
+	bootph-pre-ram;
+};

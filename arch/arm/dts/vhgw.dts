@@ -1,0 +1,572 @@
+// SPDX-License-Identifier: GPL-2.0+
+ /*
+  * Copyright 2020 NXP
+  */
+
+/dts-v1/;
+
+#include <dt-bindings/interrupt-controller/irq.h>
+#include "imx8mn.dtsi"
+
+/ {
+	model = "Data Respons Solutions VHGW";
+	compatible = "drs,vhgw", "fsl,imx8mn";
+
+	aliases {
+		spi0 = &ecspi1;
+	};
+
+	chosen {
+		stdout-path = &uart2;
+	};
+
+	memory@40000000 {
+		device_type = "memory";
+		reg = <0x0 0x40000000 0 0x80000000>;
+	};
+
+	signature {
+		required-mode = "any";
+
+		key-datarespons {
+			required = "conf";
+			algo = "sha256,rsa4096";
+			rsa,r-squared = <
+				0x130bf445 0xb210e2ce 0xf57fe687
+				0x57394736 0x62871837 0x75f4fe88 0x387e555a
+				0x189837f0 0x2707b143 0xa899a000 0x1e4dd8cb
+				0xeaf34074 0xf3d5f3c7 0x99e4c2eb 0xfc860aa7
+				0x0f6b1b9d 0x48d49b2c 0x0d184698 0x362e812d
+				0x9e73accd 0xa9fdc59c 0x08440beb 0xbf09b938
+				0xf474b95d 0xa1a4c13c 0xa2041e6a 0x10e88c1e
+				0xad45643a 0xc750d0cb 0x314da2e8 0x31e6d1d7
+				0xdc07a2fb 0xbc2c475b 0xe1132e66 0x33071c12
+				0xa4165a31 0xd624e7ab 0xab7f8404 0x9a88dac8
+				0x956eb55a 0x6ca588b8 0x1acb7c53 0x96e8855b
+				0xca27e87a 0xbc69a58d 0x0f88e180 0xae55ca63
+				0x7e51c80a 0x6d92828c 0x9d8be7d0 0xc7f7c0a8
+				0x171661a7 0x4062c6fa 0x30a50bbb 0xecdd3679
+				0x80b250c3 0x3a163d00 0x4c45cc74 0x0a30f4a8
+				0x4f02359b 0x85510abb 0x0720bea9 0x88132051
+				0xbe718e70 0x10b6c3e5 0x04122467 0x425e1146
+				0x7e76f2e7 0x75babf2b 0x8285a2b3 0x6f5a1d19
+				0x72f6a653 0xff45baf6 0xacb11eff 0x9a05984d
+				0xb726a750 0x50ddd501 0xdd51e553 0x01b83294
+				0xe1e78356 0x677c8c63 0x833a0f3f 0xcdb07721
+				0x3d179c19 0x9a76f4c2 0x39576908 0x17249c8a
+				0x57103fba 0x4f2df66b 0xa1c945fa 0x94de9f20
+				0x1f21ef88 0xcc3fc6c5 0x54aef0a7 0x22eb6a05
+				0x4c9d7861 0x8df3fe1f 0x990fa5c1 0x22b84516
+				0xc48877dc 0x4896a835 0x281ded72 0x45b59054
+				0x00eeb4a0 0xa254d782 0x5f7649ef 0x295869c5
+				0x634885ce 0xc2632b4e 0xa7e19e23 0xb3d239fc
+				0x6057347d 0xcfd79d37 0x256fd805 0x85f82100
+				0x9e9d76f0 0x6a4b4632 0xeedbf6fa 0xe45034c0
+				0x59be5d23 0x631e69b9 0xc7f2adfe 0x9653e15e
+				0x3852bcf1 0xdc907f58 0x6919bc8a 0x040ebc8e
+				0x5d65cbf6>;
+			rsa,modulus = <
+				0xdfc488bf 0x3ac051bf 0x3aafe113 0xa6b1bf8f
+				0xb4c6966d 0x66c0e665 0xe8fe08d1 0x76c4cf6b
+				0x26a81fe9 0xc378989c 0x4fed3b6d 0xbbd0ebc6
+				0x5c0b2e8f 0x70882107 0x668a4836 0x493bdabe
+				0x13b58dc7 0x7e1f5610 0x3984cbec 0xa8313e3e
+				0x50a37315 0x2eb75947 0x6aa0f86d 0xf908e302
+				0x1d91bfc8 0xc02f455f 0x8b92c857 0x0a208010
+				0x5f71b5b1 0x1476f55a 0x240042f4 0x76cf228b
+				0x4ad41f29 0x5ba68dae 0x6737bc9a 0x35f7fd2b
+				0x7e707b5e 0x37709ede 0xdf6e45b5 0x27e26a30
+				0xcb2760fc 0xfad6a62b 0x107c09cd 0x371b9c6c
+				0x210eaf3b 0xb46cfef9 0xf2b872ac 0x7ad3e577
+				0x1f3999c9 0xbfd73225 0xe7415f8e 0xc49e0e74
+				0x3d900c78 0x441f9dd4 0x813cd6e6 0x5577c409
+				0x83403f12 0x23d9838e 0x44452a85 0xf6875ffe
+				0x6fcd5b51 0x12ee8c40 0x3bee7ddf 0x7215cc35
+				0x4b5cf539 0x7ed625a0 0x1ed34911 0x2d60833e
+				0x3600a7ec 0x1571403d 0x92ae0c2c 0x9ddf5499
+				0xeb746735 0x25b305b2 0xa5e06d70 0xcca62cc3
+				0x1fcd97dc 0xa7902768 0x65b1d01e 0x7a150ece
+				0xbc157a9d 0x6c0b02f4 0x2bf5021f 0x9a95468b
+				0xd784f910 0x8d42b117 0xa4747dc8 0x83299ca9
+				0x4e8cc2a8 0xcb451fe7 0xbc338b77 0x69e7ee8e
+				0x0727aadb 0x6c3cd733 0x0cf506a7 0x5df197bc
+				0x7dd804a7 0x5a606e01 0x90bcf621 0xe44c9f84
+				0xd14e7d6b 0xc7c75399 0x9a9a193f 0xe036bbdd
+				0xb0e5523f 0xc7caf958 0x53b9f6de 0xb2767344
+				0x24fc5889 0x4ca35d1f 0x1d81b124 0xa436d540
+				0xdc72a390 0xabb95cf7 0x23d16da1 0xf600c84a
+				0x4a389fc6 0xd797d4c8 0x93f93c43 0x876a27c4
+				0x48380814 0x3dbc932b 0xd9c4a3e5 0x09084790
+				0xac349fc4 0x93232312 0x2554f5b7 0x19ebd13b>;
+			rsa,exponent = <0x00000000 0x00010001>;
+			rsa,n0-inverse = <0x70ad200d>;
+			rsa,num-bits = <0x00001000>;
+			key-name-hint = "datarespons";
+		};
+
+		key-bromma {
+			required = "conf";
+			algo = "sha256,rsa4096";
+			rsa,r-squared = <
+				0x292c22df 0x55ab427c 0x3d8b1d02
+				0x59217aef 0xc5b80c6e 0x01e5afe1 0xe2db2f51
+				0x4f7cdf62 0xc96140bd 0x53ec8e42 0x3955b03e
+				0x387b6c17 0x094e929f 0x0dd4cce6 0xb4bb0a67
+				0x80c2064a 0xed44a774 0x09a7f7dd 0xd6bc0f05
+				0x532a77c9 0x47f9a503 0x550e4933 0xef1a93d2
+				0x3d0b8f91 0x3cf397dc 0x4495db15 0x3420098c
+				0x37c65e93 0x47bb0892 0x5f01066a 0xdd010654
+				0x35549099 0xe1962615 0x18307b0a 0xdcf492f2
+				0xfe7ebfae 0x2ae7c2c8 0xb0d41633 0x971cd717
+				0x4db2e4a7 0x491f58f6 0x9c9f6119 0xdb37e96b
+				0xc3e298c2 0xb564aaa9 0x15ede207 0x3e3e2cb0
+				0x91b67899 0x946e87c7 0x5cadbab0 0x1b90da77
+				0x90cd324e 0xa258a5e8 0x8abc3f68 0xa2ad6d8d
+				0xf5b40cde 0x0bee8c83 0x02e252cc 0x3cd75c2b
+				0x40abe5d2 0x4839dc10 0x769516d8 0x3836d33a
+				0x5f5308c3 0x3282a419 0x1b8fd769 0xda244fd9
+				0x53b04393 0xa1f07005 0xf8bfb8ae 0x88145b89
+				0xb0922a77 0xbfcdf36c 0xf2233e17 0xe01ac1be
+				0x930963a6 0xd1f27e4e 0x5c44573f 0x170a5c2f
+				0xa585f3b9 0xa91bbf29 0xe0ecb73d 0x12d10752
+				0x94827132 0x1735b408 0x09259578 0x1c3e0c61
+				0x08bd0bb1 0xb4d32747 0x958db7ec 0x94dcc88d
+				0x44f482cf 0xf55a479a 0x9c979f3d 0x2bd82900
+				0x6d3956b6 0x5cac3e68 0xc16b12e4 0xc792b3e6
+				0x2b492089 0xd032c178 0x9b5eb23c 0x61a31a5f
+				0x05171992 0x7b157193 0x1f488755 0x9c825f33
+				0x6a67c8f4 0xc29ef62d 0x24b2153f 0x31ac0d4b
+				0xceed9d50 0x564d24d3 0x6e2f442d 0x0b2fb1c8
+				0xb5f7f51d 0x6d9d03da 0xaf24409c 0xde2ab81d
+				0xc8fe617e 0xee9f78cb 0x03231a39 0x49128f6a
+				0xbe87ecf9 0x505f6159 0x3221c243 0xea47f90f
+				0xe939c921>;
+			rsa,modulus = <
+				0xb7b89aa0 0x46e598bc 0xdf8b6211 0x76298dd5
+				0xe58267d5 0x3ebaf5cf 0x831a35b7 0x270b159b
+				0x5f000e15 0xfa3f8e7a 0xcb5a0ad6 0x2800eaed
+				0x34e53eff 0x61c517c1 0xd047092b 0x6ef916d4
+				0xdf4226bf 0x0804e961 0xa2a83f47 0xfdfc89cb
+				0x9e0420c8 0xbbc9ee76 0x856fe3f9 0x32f72def
+				0xd75a4fd3 0x79c2ad2e 0x92594f54 0xd31e3680
+				0xd9c5f450 0x8eeade31 0xdbd45257 0xfce50fbe
+				0x09cc128b 0xd1b81662 0xb1d4113d 0xe504e9f1
+				0xb66c1f21 0x8d7653eb 0x74c02019 0xb59d2850
+				0x6810f201 0xd1cdc1bd 0x3f99da91 0xb020f445
+				0xfc78bed6 0x53907465 0xbb305ee9 0x14751bf7
+				0xebbdc6c1 0xcc9ae68a 0xe04b2061 0x6ae6e6b6
+				0x6d17b295 0x5c54f387 0x5771410d 0x0d098519
+				0xafe62423 0x16f99c4b 0x46da6841 0x288a9980
+				0xdf5c1077 0x36f5eb54 0x84ad9a56 0x9127243d
+				0x570eebbd 0x1cb94678 0x84927d53 0x3ebb78e9
+				0x1ef74c54 0x7a3c7e90 0xa9e8192d 0x9bd63d39
+				0xe1ab2344 0x56241a5a 0x3debc2d0 0x23512a2b
+				0x611b4805 0x8fb31a86 0x683cbf4f 0x62dd0dcc
+				0x6fdb6ffd 0xd6d0b04a 0x38298760 0x8f68f7f0
+				0xca6a8da5 0x84f9a280 0xc247ec23 0x08a44911
+				0x329bb043 0xa5bde863 0xebbfa793 0xb0f5887b
+				0x27943a70 0x133a5ec1 0x3c5e0251 0x27d0ddcd
+				0x1c217d4e 0x86cbf000 0xdbec0f65 0x84fde3b8
+				0x0a286a12 0x9406a566 0xc65b98d8 0xb36c4ed2
+				0x4883ee95 0x3196b585 0xbcab651b 0x10e0799f
+				0x307c1cff 0xfe04d7fa 0xb8c6b8e3 0x10562dfe
+				0x42542e7d 0x897bcbc7 0x821f4c8c 0xeb03b2d8
+				0xe8ec9416 0xb8f25784 0x0f8c4963 0x94ac22d6
+				0xbb9f55f4 0x60c81d12 0xf82b55ed 0xb5f53304
+				0x715cc2b5 0x9e074959 0x30d5d7cb 0x94543371>;
+			rsa,exponent = <0x00000000 0x00010001>;
+			rsa,n0-inverse = <0x467bd26f>;
+			rsa,num-bits = <0x00001000>;
+			key-name-hint = "bromma";
+		};
+	};
+
+	reg_usb0: regulator-usb0 {
+		compatible = "regulator-fixed";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_reg_usb0>;
+		regulator-name = "usb0";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		gpio = <&gpio4 25 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-always-on;
+		regulator-boot-on;
+	};
+};
+
+&A53_0 {
+	cpu-supply = <&buck1_reg>;
+};
+
+&A53_1 {
+	cpu-supply = <&buck1_reg>;
+};
+
+&A53_2 {
+	cpu-supply = <&buck1_reg>;
+};
+
+&A53_3 {
+	cpu-supply = <&buck1_reg>;
+};
+
+&i2c1 {
+	clock-frequency = <400000>;
+	pinctrl-names = "default", "gpio";
+	pinctrl-0 = <&pinctrl_i2c1>;
+	pinctrl-1 = <&pinctrl_i2c1_gpio>;
+	scl-gpios = <&gpio5 14 GPIO_ACTIVE_HIGH>;
+	sda-gpios = <&gpio5 15 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+
+	pmic: bd71850@4b {
+		compatible = "rohm,bd71847";
+		reg = <0x4b>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_pmic>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
+		rohm,reset-snvs-powered;
+
+		#clock-cells = <0>;
+		clocks = <&osc_32k 0>;
+		clock-output-names = "clk-32k-out";
+
+		regulators {
+			buck1_reg: BUCK1 {
+				regulator-name = "buck1";
+				regulator-min-microvolt = <700000>;
+				regulator-max-microvolt = <1300000>;
+				regulator-boot-on;
+				regulator-always-on;
+				regulator-ramp-delay = <1250>;
+			};
+			/*
+			buck2_reg: BUCK2 {
+				regulator-name = "buck2";
+				regulator-min-microvolt = <700000>;
+				regulator-max-microvolt = <1300000>;
+				regulator-boot-on;
+				regulator-always-on;
+				regulator-ramp-delay = <1250>;
+			};
+
+			buck3_reg: BUCK3 {
+				// BUCK5 in datasheet
+				regulator-name = "buck3";
+				regulator-min-microvolt = <700000>;
+				regulator-max-microvolt = <1350000>;
+			};
+			 */
+			buck4_reg: BUCK4 {
+				// BUCK6 in datasheet
+				regulator-name = "buck4";
+				regulator-min-microvolt = <3000000>;
+				regulator-max-microvolt = <3300000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			buck5_reg: BUCK5 {
+				// BUCK7 in datasheet
+				regulator-name = "buck5";
+				regulator-min-microvolt = <1605000>;
+				regulator-max-microvolt = <1995000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			buck6_reg: BUCK6 {
+				// BUCK8 in datasheet
+				regulator-name = "buck6";
+				regulator-min-microvolt = <800000>;
+				regulator-max-microvolt = <1400000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			ldo1_reg: LDO1 {
+				regulator-name = "ldo1";
+				regulator-min-microvolt = <1600000>;
+				regulator-max-microvolt = <3300000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			ldo2_reg: LDO2 {
+				regulator-name = "ldo2";
+				regulator-min-microvolt = <800000>;
+				regulator-max-microvolt = <900000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			ldo3_reg: LDO3 {
+				regulator-name = "ldo3";
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <3300000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			ldo4_reg: LDO4 {
+				regulator-name = "ldo4";
+				regulator-min-microvolt = <900000>;
+				regulator-max-microvolt = <1800000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			ldo6_reg: LDO6 {
+				regulator-name = "ldo6";
+				regulator-min-microvolt = <900000>;
+				regulator-max-microvolt = <1800000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+		};
+	};
+};
+
+&i2c3 {
+	clock-frequency = <100000>;
+	pinctrl-names = "default", "gpio";
+	pinctrl-0 = <&pinctrl_i2c3>;
+	pinctrl-1 = <&pinctrl_i2c3_gpio>;
+	scl-gpios = <&gpio5 18 GPIO_ACTIVE_HIGH>;
+	sda-gpios = <&gpio5 19 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+
+	usb_hub: usb2512bi@2c {
+		reg = <0x2c>;
+		compatible = "microchip,usb2512bi";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_hub>;
+		reset-gpios = <&gpio5 2 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&ecspi1 {
+	cs-gpios = <&gpio5 9 GPIO_ACTIVE_LOW>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi1>;
+	status = "okay";
+
+	flash0: mx25l3233fm2i-08g@0 {
+		reg = <0>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "jedec,spi-nor";
+		spi-max-frequency = <25000000>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			spl@0 {
+				label = "spl";
+				reg = <0x000000 0x040000>;
+			};
+
+			u-boot@40000 {
+				label = "u-boot";
+				reg = <0x040000 0x190000>;
+			};
+
+			platform@1D0000 {
+				label = "platform";
+				reg = <0x1D0000 0x010000>;
+				read-only;
+			};
+
+			system_a@1E0000 {
+				label = "system_a";
+				reg = <0x1E0000 0x010000>;
+			};
+
+			system_b@1F0000 {
+				label = "system_b";
+				reg = <0x1F0000 0x010000>;
+			};
+
+			spl-second@200000 {
+				label = "spl-second";
+				reg = <0x200000 0x040000>;
+			};
+
+			u-boot-second@240000 {
+				label = "u-boot-second";
+				reg = <0x240000 0x190000>;
+			};
+
+			user_a@3D0000 {
+				label = "user_a";
+				reg = <0x3D0000 0x010000>;
+			};
+
+			user_b@3E0000 {
+				label = "user_b";
+				reg = <0x3E0000 0x010000>;
+			};
+		};
+	};
+};
+
+&snvs_pwrkey {
+	status = "okay";
+};
+
+&uart2 { /* console */
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2>;
+	status = "okay";
+};
+
+&usbotg1 {
+	dr_mode = "otg";
+	hnp-disable;
+	srp-disable;
+	adp-disable;
+	usb-role-switch;
+	disable-over-current;
+	status = "okay";
+};
+
+&usdhc3 {
+	assigned-clocks = <&clk IMX8MN_CLK_USDHC3_ROOT>;
+	assigned-clock-rates = <400000000>;
+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+	pinctrl-0 = <&pinctrl_usdhc3>;
+	pinctrl-1 = <&pinctrl_usdhc3_100mhz>;
+	pinctrl-2 = <&pinctrl_usdhc3_200mhz>;
+	bus-width = <8>;
+	non-removable;
+	status = "okay";
+};
+
+&wdog1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_wdog>;
+	fsl,ext-reset-output;
+	status = "okay";
+};
+
+&iomuxc {
+	pinctrl_reg_usb0: usb0reggrp {
+		fsl,pins = <
+			MX8MN_IOMUXC_SAI2_TXC_GPIO4_IO25	0x100 /* USB_OTG_PWR_EN */
+		>;
+	};
+
+	pinctrl_i2c1: i2c1grp {
+		fsl,pins = <
+			MX8MN_IOMUXC_I2C1_SCL_I2C1_SCL		0x400001c3 /* I2C1_SCL */
+			MX8MN_IOMUXC_I2C1_SDA_I2C1_SDA		0x400001c3 /* I2C1_SDA */
+		>;
+	};
+
+	pinctrl_i2c1_gpio: i2c1gpiogrp {
+		fsl,pins = <
+			MX8MN_IOMUXC_I2C1_SCL_GPIO5_IO14	0x1c3 /* I2C1_SCL */
+			MX8MN_IOMUXC_I2C1_SDA_GPIO5_IO15	0x1c3 /* I2C1_SDA */
+		>;
+	};
+
+	pinctrl_pmic: pmicirqgrp {
+		fsl,pins = <
+			MX8MN_IOMUXC_GPIO1_IO03_GPIO1_IO3	0x140 /* PMIC_nINT */
+		>;
+	};
+
+	pinctrl_i2c3: i2c3grp {
+		fsl,pins = <
+			MX8MN_IOMUXC_I2C3_SCL_I2C3_SCL		0x400001c3 /* I2C3_SCL */
+			MX8MN_IOMUXC_I2C3_SDA_I2C3_SDA		0x400001c3 /* I2C3_SDA */
+		>;
+	};
+
+	pinctrl_i2c3_gpio: i2c3gpiogrp {
+		fsl,pins = <
+			MX8MN_IOMUXC_I2C3_SCL_GPIO5_IO18	0x400001c3 /* I2C3_SCL */
+			MX8MN_IOMUXC_I2C3_SDA_GPIO5_IO19	0x400001c3 /* I2C3_SDA */
+		>;
+	};
+
+	pinctrl_hub: hubgrp {
+		fsl,pins = <
+			MX8MN_IOMUXC_SAI3_MCLK_GPIO5_IO2	0x0 /* USB_HUB1_nRESET */
+		>;
+	};
+
+	pinctrl_uart2: uart2grp {
+		fsl,pins = <
+			MX8MN_IOMUXC_SAI3_TXFS_UART2_DCE_RX			0x0 /* UART_TXD-CPU */
+			MX8MN_IOMUXC_SAI3_TXC_UART2_DCE_TX			0x80 /* UART_RXD-CPU */
+		>;
+	};
+
+	pinctrl_ecspi1: ecspi1grp {
+		fsl,pins = <
+			MX8MN_IOMUXC_ECSPI1_SCLK_ECSPI1_SCLK	0x96 /* ECSPI1_SCLK-Flash */
+			MX8MN_IOMUXC_ECSPI1_MISO_ECSPI1_MISO	0x96 /* ECSPI1_MISO-Flash */
+			MX8MN_IOMUXC_ECSPI1_MOSI_ECSPI1_MOSI	0x96 /* ECSPI1_MOSI-Flash */
+			MX8MN_IOMUXC_ECSPI1_SS0_GPIO5_IO9		0x0 /* ECSPI1_SS0-Flash */
+		>;
+	};
+
+	pinctrl_usdhc3: usdhc3grp {
+		fsl,pins = <
+			MX8MN_IOMUXC_NAND_CE1_B_USDHC3_STROBE	0x90 /* SD-STROBE-eMMC */
+			MX8MN_IOMUXC_NAND_CE2_B_USDHC3_DATA5	0x1d0 /* SD-D5-eMMC */
+			MX8MN_IOMUXC_NAND_CE3_B_USDHC3_DATA6	0x1d0 /* SD-D6-eMMC */
+			MX8MN_IOMUXC_NAND_CLE_USDHC3_DATA7		0x1d0 /* SD-D7-eMMC */
+			MX8MN_IOMUXC_NAND_RE_B_USDHC3_DATA4		0x1d0 /* SD-D4-eMMC */
+			MX8MN_IOMUXC_NAND_WE_B_USDHC3_CLK		0x40000090 /* SD-CLK-eMMC */
+			MX8MN_IOMUXC_NAND_WP_B_USDHC3_CMD		0x1d0 /* SD-CMD-eMMC */
+			MX8MN_IOMUXC_NAND_DATA04_USDHC3_DATA0	0x1d0 /* SD-D0-eMMC */
+			MX8MN_IOMUXC_NAND_DATA05_USDHC3_DATA1	0x1d0 /* SD-D1-eMMC */
+			MX8MN_IOMUXC_NAND_DATA06_USDHC3_DATA2	0x1d0 /* SD-D2-eMMC */
+			MX8MN_IOMUXC_NAND_DATA07_USDHC3_DATA3	0x1d0 /* SD-D3-eMMC */
+		>;
+	};
+
+	pinctrl_usdhc3_100mhz: usdhc3-100mhzgrp {
+		fsl,pins = <
+			MX8MN_IOMUXC_NAND_CE1_B_USDHC3_STROBE	0x94 /* SD-STROBE-eMMC */
+			MX8MN_IOMUXC_NAND_CE2_B_USDHC3_DATA5	0x1d4 /* SD-D5-eMMC */
+			MX8MN_IOMUXC_NAND_CE3_B_USDHC3_DATA6	0x1d4 /* SD-D6-eMMC */
+			MX8MN_IOMUXC_NAND_CLE_USDHC3_DATA7		0x1d4 /* SD-D7-eMMC */
+			MX8MN_IOMUXC_NAND_RE_B_USDHC3_DATA4		0x1d4 /* SD-D4-eMMC */
+			MX8MN_IOMUXC_NAND_WE_B_USDHC3_CLK		0x40000094 /* SD-CLK-eMMC */
+			MX8MN_IOMUXC_NAND_WP_B_USDHC3_CMD		0x1d4 /* SD-CMD-eMMC */
+			MX8MN_IOMUXC_NAND_DATA04_USDHC3_DATA0	0x1d4 /* SD-D0-eMMC */
+			MX8MN_IOMUXC_NAND_DATA05_USDHC3_DATA1	0x1d4 /* SD-D1-eMMC */
+			MX8MN_IOMUXC_NAND_DATA06_USDHC3_DATA2	0x1d4 /* SD-D2-eMMC */
+			MX8MN_IOMUXC_NAND_DATA07_USDHC3_DATA3	0x1d4 /* SD-D3-eMMC */
+		>;
+	};
+
+	pinctrl_usdhc3_200mhz: usdhc3-200mhzgrp {
+		fsl,pins = <
+			MX8MN_IOMUXC_NAND_CE1_B_USDHC3_STROBE	0x96 /* SD-STROBE-eMMC */
+			MX8MN_IOMUXC_NAND_CE2_B_USDHC3_DATA5	0x1d6 /* SD-D5-eMMC */
+			MX8MN_IOMUXC_NAND_CE3_B_USDHC3_DATA6	0x1d6 /* SD-D6-eMMC */
+			MX8MN_IOMUXC_NAND_CLE_USDHC3_DATA7		0x1d6 /* SD-D7-eMMC */
+			MX8MN_IOMUXC_NAND_RE_B_USDHC3_DATA4		0x1d6 /* SD-D4-eMMC */
+			MX8MN_IOMUXC_NAND_WE_B_USDHC3_CLK		0x40000096 /* SD-CLK-eMMC */
+			MX8MN_IOMUXC_NAND_WP_B_USDHC3_CMD		0x1d6 /* SD-CMD-eMMC */
+			MX8MN_IOMUXC_NAND_DATA04_USDHC3_DATA0	0x1d6 /* SD-D0-eMMC */
+			MX8MN_IOMUXC_NAND_DATA05_USDHC3_DATA1	0x1d6 /* SD-D1-eMMC */
+			MX8MN_IOMUXC_NAND_DATA06_USDHC3_DATA2	0x1d6 /* SD-D2-eMMC */
+			MX8MN_IOMUXC_NAND_DATA07_USDHC3_DATA3	0x1d6 /* SD-D3-eMMC */
+		>;
+	};
+
+	pinctrl_wdog: wdoggrp {
+		fsl,pins = <
+			MX8MN_IOMUXC_GPIO1_IO02_WDOG1_WDOG_B	0x166 /* WDOG_B */
+		>;
+	};
+};

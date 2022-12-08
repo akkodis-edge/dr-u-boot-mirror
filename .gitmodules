@@ -1,0 +1,3 @@
+[submodule "board/datarespons/common"]
+	path = board/datarespons/common
+	url = git@github.com:data-respons-solutions/uboot-common.git
