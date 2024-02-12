@@ -757,7 +757,10 @@ int ehci_usb_remove(struct udevice *dev)
 #endif
 
 #if CONFIG_IS_ENABLED(CLK)
-	clk_disable(&priv->clk);
+	/*
+	 * CPU hang when clk disabled.
+	 *
+	 * clk_disable(&priv->clk);*/
 #endif
 
 	return 0;
