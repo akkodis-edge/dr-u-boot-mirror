@@ -9,10 +9,6 @@
 
 #include <asm/arch/imx-regs.h>
 
-/* boot configuration */
-#define FIT_ADDR 0x43600000
-#define FIT_IMAGE "/boot/fitImage"
-
 /*
  * Boot order:
  * - USB partition with label TESTDRIVE
@@ -39,5 +35,10 @@
 #define CFG_SYS_SDRAM_BASE		0x40000000
 #define PHYS_SDRAM					0x40000000
 #define PHYS_SDRAM_SIZE				0x40000000 /* 1GB DDR */
+
+/* Required by mach-imx/imx8m/soc.c/arch_spl_mmc_get_uboot_raw_sector() */
+#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_DATA_PART_OFFSET 0
+/* Required by mach-imx/spl_imx_romapi.c/spl_romapi_get_uboot_base() */
+#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR 0
 
 #endif // VHGW_H__
