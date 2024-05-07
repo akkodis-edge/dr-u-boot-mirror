@@ -1,0 +1,265 @@
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Copyright 2019, 2021 NXP
+ */
+
+/ {
+	wdt-reboot {
+		compatible = "wdt-reboot";
+		wdt = <&wdog1>;
+		bootph-pre-ram;
+	};
+
+	binman: binman {
+		multiple-images;
+		u-boot-spl-ddr {
+			filename = "u-boot-spl-ddr.bin";
+			pad-byte = <0xff>;
+			align-size = <4>;
+			align = <4>;
+			u-boot-spl {
+				align-end = <4>;
+				filename = "u-boot-spl.bin";
+			};
+			ddr-1d-imem-fw {
+				filename = "lpddr4_pmu_train_1d_imem_202006.bin";
+				type = "blob-ext";
+				align-end = <4>;
+				size = <0x8000>;
+				pad-byte = <0x00>;
+			};
+			ddr-1d-dmem-fw {
+				filename = "lpddr4_pmu_train_1d_dmem_202006.bin";
+				type = "blob-ext";
+				align-end = <4>;
+				size = <0x4000>;
+				pad-byte = <0x00>;
+			};
+			ddr-2d-imem-fw {
+				filename = "lpddr4_pmu_train_2d_imem_202006.bin";
+				type = "blob-ext";
+				align-end = <4>;
+				size = <0x8000>;
+				pad-byte = <0x00>;
+			};
+			ddr-2d-dmem-fw {
+				filename = "lpddr4_pmu_train_2d_dmem_202006.bin";
+				type = "blob-ext";
+				align-end = <4>;
+			};
+		};
+		spl {
+			filename = "spl.img";
+			mkimage {
+				args = "-n spl/u-boot-spl.cfgout -T imx8mimage -e 0x920000";
+				blob {
+					filename = "u-boot-spl-ddr.bin";
+				};
+			};
+		};
+		itb {
+			filename = "u-boot.itb";
+			align-size = <4096>;
+			fit {
+				description = "Configuration to load ATF before U-Boot";
+				fit,fdt-list = "of-list";
+				#address-cells = <1>;
+				images {
+					uboot {
+						arch = "arm64";
+						compression = "none";
+						description = "U-Boot (64-bit)";
+						load = <CONFIG_TEXT_BASE>;
+						type = "standalone";
+						uboot-blob {
+							filename = "u-boot-nodtb.bin";
+							type = "blob-ext";
+						};
+					};
+					atf {
+						arch = "arm64";
+						compression = "none";
+						description = "ARM Trusted Firmware";
+						entry = <0x970000>;
+						load = <0x970000>;
+						type = "firmware";
+						atf-blob {
+							type = "atf-bl31";
+						};
+					};
+					binman_fip: fip {
+						arch = "arm64";
+						compression = "none";
+						description = "Trusted Firmware FIP";
+						load = <0x40310000>;
+						type = "firmware";
+					};
+					tee {
+						arch = "arm64";
+						compression = "none";
+						description = "TEE os";
+						entry = <0x56000000>;
+						load = <0x56000000>;
+						type = "firmware";
+						tee-blob {
+							type = "tee-os";
+							filename = "tee-pager_v2.bin";
+						};
+					};
+					@fdt-SEQ {
+						compression = "none";
+						description = "NAME";
+						type = "flat_dt";
+						uboot-fdt-blob {
+							filename = "u-boot.dtb";
+							type = "blob-ext";
+						};
+					};
+				};
+				configurations {
+					default = "@config-DEFAULT-SEQ";
+					binman_configuration: @config-SEQ {
+						description = "NAME";
+						fdt = "fdt-SEQ";
+						firmware = "uboot";
+						loadables = "atf", "tee";
+					};
+				};
+			};
+		};
+	};
+};
+
+&aips3 {
+	bootph-pre-ram;
+};
+
+&{/soc@0/bus@30800000/spba-bus@30800000} {
+	bootph-pre-ram;
+};
+
+&ecspi1 {
+	bootph-pre-ram;
+};
+
+&pinctrl_ecspi1 {
+	bootph-pre-ram;
+};
+
+&flash0 {
+	bootph-pre-ram;
+	partitions {
+		bootph-pre-ram;
+		platform@1D0000 {
+			bootph-pre-ram;
+		};
+		u-boot@40000 {
+			bootph-pre-ram;
+			read-only;
+		};
+		u-boot-second@240000 {
+			bootph-pre-ram;
+			read-only;
+		};
+	};
+};
+
+&i2c1 {
+	bootph-pre-ram;
+};
+
+&pinctrl_i2c1 {
+	bootph-pre-ram;
+};
+
+&pinctrl_i2c1_gpio {
+	bootph-pre-ram;
+};
+
+&{/soc@0/bus@30800000/i2c@30a20000/pmic@25} {
+	bootph-pre-ram;
+};
+
+&{/soc@0/bus@30800000/i2c@30a20000/pmic@25/regulators} {
+	bootph-pre-ram;
+};
+
+&pinctrl_pmic {
+	bootph-pre-ram;
+};
+
+&{/soc@0} {
+	bootph-pre-ram;
+};
+
+&clk {
+	bootph-pre-ram;
+};
+
+&osc_24m {
+	bootph-pre-ram;
+};
+
+&osc_32k {
+	bootph-pre-ram;
+};
+
+&aips1 {
+	bootph-pre-ram;
+};
+
+&iomuxc {
+	bootph-pre-ram;
+};
+
+&pinctrl_uart2 {
+	bootph-pre-ram;
+};
+
+&pinctrl_wdog {
+	bootph-pre-ram;
+};
+
+&gpio1 {
+	bootph-pre-ram;
+};
+
+&gpio2 {
+	bootph-pre-ram;
+};
+
+&gpio3 {
+	bootph-pre-ram;
+};
+
+&gpio4 {
+	bootph-pre-ram;
+};
+
+&gpio5 {
+	bootph-pre-ram;
+};
+
+&uart2 {
+	bootph-pre-ram;
+};
+
+&crypto {
+	bootph-pre-ram;
+};
+
+&sec_jr0 {
+	bootph-pre-ram;
+};
+
+&sec_jr1 {
+	bootph-pre-ram;
+};
+
+&sec_jr2 {
+	bootph-pre-ram;
+};
+
+&wdog1 {
+	bootph-pre-ram;
+};

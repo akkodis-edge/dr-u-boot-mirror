@@ -1,0 +1,13 @@
+config SYS_BOARD
+	default "rv8007"
+
+config SYS_VENDOR
+	default "datarespons"
+
+config SYS_CONFIG_NAME
+	default "rv8007"
+
+config IMX_CONFIG
+	default "board/datarespons/rv8007/imximage-spl.cfg"
+
+source "board/datarespons/common/Kconfig"

@@ -392,6 +392,15 @@ config TARGET_VHGW
 	select FSL_CAAM
 	select SPL_CRYPTO if SPL
 
+config TARGET_RV8007
+	bool "RV8007"
+	select IMX8MP
+	select SUPPORT_SPL
+	select IMX8M_LPDDR4
+	select BINMAN
+	select FSL_CAAM
+	select SPL_CRYPTO if SPL
+
 endchoice
 
 source "board/advantech/imx8mp_rsb3720a1/Kconfig"
@@ -429,5 +438,6 @@ source "board/toradex/smarc-imx8mp/Kconfig"
 source "board/toradex/verdin-imx8mm/Kconfig"
 source "board/toradex/verdin-imx8mp/Kconfig"
 source "board/datarespons/vhgw/Kconfig"
+source "board/datarespons/rv8007/Kconfig"
 
 endif
