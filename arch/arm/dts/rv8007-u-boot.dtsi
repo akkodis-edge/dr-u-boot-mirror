@@ -80,8 +80,8 @@
 						arch = "arm64";
 						compression = "none";
 						description = "ARM Trusted Firmware";
-						entry = <0x960000>;
-						load = <0x960000>;
+						entry = <0x970000>;
+						load = <0x970000>;
 						type = "firmware";
 						atf-blob {
 							type = "atf-bl31";
