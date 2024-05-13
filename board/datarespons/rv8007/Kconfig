@@ -1,3 +1,5 @@
+if TARGET_RV8007
+
 config SYS_BOARD
 	default "rv8007"
 
@@ -11,3 +13,5 @@ config IMX_CONFIG
 	default "board/datarespons/rv8007/imximage-spl.cfg"
 
 source "board/datarespons/common/Kconfig"
+
+endif
