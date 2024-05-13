@@ -1,3 +1,5 @@
+if TARGET_VHGW
+
 config SYS_BOARD
 	default "vhgw"
 
@@ -19,3 +21,5 @@ config PLATFORM_SIGNATURE
 	default y
 
 source "board/datarespons/common/Kconfig"
+
+endif
