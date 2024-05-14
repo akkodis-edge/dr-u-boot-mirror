@@ -80,6 +80,7 @@ static ulong spl_mtd_fit_read(struct spl_load_info *load, ulong sector,
 		return 0;
 	return (ulong) retlen;
 }
+
 static int spl_mtd_load_image(struct spl_image_info *spl_image,
 			      struct spl_boot_device *bootdev)
 {
@@ -142,16 +143,17 @@ void spl_dram_init(struct dram_timing_info* dram_timing_info)
 
 void spl_board_init(void)
 {
-	struct udevice *dev;
-	int ret;
+	arch_misc_init();
 
-	puts("Normal Boot\n");
-
-	ret = uclass_get_device_by_name(UCLASS_CLK,
-					"clock-controller@30380000",
-					&dev);
-	if (ret < 0)
-		printf("Failed to find clock node. Check device tree\n");
+	/*
+	 * Set GIC clock to 500Mhz for OD VDD_SOC. Kernel driver does
+	 * not allow to change it. Should set the clock after PMIC
+	 * setting done. Default is 400Mhz (system_pll1_800m with div = 2)
+	 * set by ROM for ND VDD_SOC
+	 */
+	clock_enable(CCGR_GIC, 0);
+	clock_set_target_val(GIC_CLK_ROOT, CLK_ROOT_ON | CLK_ROOT_SOURCE_SEL(5));
+	clock_enable(CCGR_GIC, 1);
 
 	/* Store platform header in dram */
 	void* pheader = bloblist_add(CONFIG_BLOBLIST_DR_PLATFORM, sizeof(struct platform_header), 8);
@@ -160,6 +162,8 @@ void spl_board_init(void)
 		hang();
 	}
 	memcpy(pheader, &platform_header, sizeof(struct platform_header));
+
+	puts("Normal Boot\n");
 }
 
 int power_init_board(void)
@@ -260,9 +264,12 @@ void board_init_f(ulong dummy)
 
 	init_uart_clk(1);
 
-	ret = spl_early_init();
+	/* Need to clear bss early as mtd subsystem depends on it */
+	memset(__bss_start, 0, __bss_end - __bss_start);
+
+	ret = spl_init();
 	if (ret) {
-		debug("spl_early_init() failed: %d\n", ret);
+		debug("spl_init() failed: %d\n", ret);
 		hang();
 	}
 
@@ -278,10 +285,8 @@ void board_init_f(ulong dummy)
 	ret = read_platform_header(&platform_header, &dram_timing_info);
 	if (ret != 0) {
 		printf("platform header failed: %d\n", ret);
-		printf("DISABLED!\n");
 		hang();
 	}
-
 	printf("Platform: %s\n", platform_header.name);
 
 	/* DDR initialization */
