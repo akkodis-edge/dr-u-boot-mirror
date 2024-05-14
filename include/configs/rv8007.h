@@ -7,6 +7,8 @@
 #ifndef RV8007_H__
 #define RV8007_H__
 
+#include <asm/arch/imx-regs.h>
+
 /*
  * Boot order:
  * - USB partition with label SERVICEUSB
@@ -33,6 +35,10 @@
 #define CFG_SYS_SDRAM_BASE		0x40000000
 #define PHYS_SDRAM				0x40000000
 #define PHYS_SDRAM_SIZE			0x80000000	/* 2 GB */
+
+/* Don't clear .bss during common init, it's already done
+ * and boards depends on it */
+#define CONFIG_SPL_BSS_SKIP_CLEAR
 
 /* Required by mach-imx/imx8m/soc.c/arch_spl_mmc_get_uboot_raw_sector() */
 #define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_DATA_PART_OFFSET 0
