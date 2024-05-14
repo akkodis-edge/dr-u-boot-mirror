@@ -158,13 +158,16 @@ relocation_return:
 /*
  * Clear BSS section
  */
+ #ifdef CONFIG_SPL_BSS_SKIP_CLEAR
+  /* Don't clear bss -- we expects it's already cleared */
+ #else
 	ldr	x0, =__bss_start		/* this is auto-relocated! */
 	ldr	x1, =__bss_end			/* this is auto-relocated! */
 clear_loop:
 	str	xzr, [x0], #8
 	cmp	x0, x1
 	b.lo	clear_loop
-
+#endif
 	/* call board_init_r(gd_t *id, ulong dest_addr) */
 	mov	x0, x18				/* gd_t */
 	ldr	x1, [x18, #GD_RELOCADDR]	/* dest_addr */
