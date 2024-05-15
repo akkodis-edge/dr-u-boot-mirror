@@ -241,6 +241,7 @@
 	pinctrl-0 = <&pinctrl_usb0>;
 	dr_mode = "host";
 	status = "okay";
+	maximum-speed = "high-speed";
 };
 
 &iomuxc {
