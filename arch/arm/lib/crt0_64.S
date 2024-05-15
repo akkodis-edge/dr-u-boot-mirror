@@ -158,9 +158,9 @@ relocation_return:
 /*
  * Clear BSS section
  */
- #ifdef CONFIG_SPL_BSS_SKIP_CLEAR
+#if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_BSS_SKIP_CLEAR)
   /* Don't clear bss -- we expects it's already cleared */
- #else
+#else
 	ldr	x0, =__bss_start		/* this is auto-relocated! */
 	ldr	x1, =__bss_end			/* this is auto-relocated! */
 clear_loop:
