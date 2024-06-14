@@ -24,7 +24,9 @@
 	"if system_load mmc 2; then " \
 		"system_boot;" \
 	"fi;" \
-	"echo no boot device found;"
+	"echo no boot device found;" \
+	"reset;"
+
 
 /* Link Definitions */
 #define CFG_SYS_INIT_RAM_ADDR	0x40000000
