@@ -17,11 +17,8 @@
 #define CONFIG_BOOTCOMMAND \
 	"echo starting boot procedure...;" \
 	"if usb start; then " \
-		"if system_load usb 0 --label TESTDRIVE; then " \
-			"usb stop;" \
+		"if system_load usb 0 --label TESTDRIVE --empty-root; then " \
 			"system_boot;" \
-		"else " \
-			"usb stop;" \
 		"fi;" \
 	"fi;" \
 	"if system_load mmc 2; then " \
