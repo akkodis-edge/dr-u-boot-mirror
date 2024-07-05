@@ -64,11 +64,22 @@ struct mtd_info* get_mtd_by_partname(const char* partname)
  * Primary SPL boots primary u-boot
  * Secondary SPL boots secondary u-boot
  *
- * If boot fails, try the other one (i.e. Primary SPL -> secondary u-boot)
- * This state should be avoided in flashing stage by:
- *  - always erase SPL before u-boot
- *  - always write u-boot before SPL
+ * To avoid mixed SPL and u-boot versions then
+ * flashing bootloader shall always follow procedure:
+ *  - erase SPL-second
+ *  - erase u-boot-second
+ *  - write u-boot-second
+ *  - write SPL-second
+ *  - erase SPL
+ *  - erase u-boot
+ *  - write u-boot
+ *  - write SPL
  */
+static const char* spl_mtd_partname(void)
+{
+	return imx8m_detect_secondary_image_boot() == 1 ? "u-boot-second" : "u-boot";
+}
+
 static ulong spl_mtd_fit_read(struct spl_load_info *load, ulong sector,
 			      ulong count, void *buf)
 {
@@ -80,6 +91,7 @@ static ulong spl_mtd_fit_read(struct spl_load_info *load, ulong sector,
 		return 0;
 	return (ulong) retlen;
 }
+
 static int spl_mtd_load_image(struct spl_image_info *spl_image,
 			      struct spl_boot_device *bootdev)
 {
@@ -87,51 +99,36 @@ static int spl_mtd_load_image(struct spl_image_info *spl_image,
 	struct legacy_img_hdr *header = NULL;
 	size_t retlen = 0;
 	int r = 0;
-	char* partnames[] = {"u-boot", "u-boot-second"};
-
-	if (imx8m_detect_secondary_image_boot() == 1) {
-		/* Secondary boot, swap partition search order */
-		char* tmp = partnames[0];
-		partnames[0] = partnames[1];
-		partnames[1] = tmp;
-	}
+	const char* partname = spl_mtd_partname();
 
 	header = spl_get_load_buffer(-sizeof(*header), sizeof(*header));
 
-	for (size_t i = 0; i < ARRAY_SIZE(partnames); ++i) {
-		printf("MTD load: %s\n", partnames [i]);
-		mtd = get_mtd_by_partname(partnames [i]);
-		if (mtd == NULL) {
-			printf("MTD probe failed\n");
-			r = -ENODEV;
-			continue;
-		}
-
-		/* Load u-boot, mkimage header is 64 bytes. */
-		r = mtd_read(mtd, 0, sizeof(*header), &retlen, (void*) header);
-		if (r != 0 || retlen != sizeof(*header)) {
-			if (retlen != sizeof(*header))
-				r = -EIO;
-			printf("MTD Failed reading from device: %d\n", r);
-			continue;
-		}
-		if (image_get_magic(header) != FDT_MAGIC) {
-			printf("%s: Image not of type FDT\n", __func__);
-			r = -EINVAL;
-			continue;
-		}
-		struct spl_load_info load;
-		load.dev = mtd;
-		load.priv = NULL;
-		load.filename = NULL;
-		load.bl_len = 1;
-		load.read = spl_mtd_fit_read;
-		r = spl_load_simple_fit(spl_image, &load, 0, header);
-		if (r == 0)
-			break;
+	printf("MTD load: %s\n", partname);
+	mtd = get_mtd_by_partname(partname);
+	if (mtd == NULL) {
+		printf("MTD probe failed\n");
+		return -ENODEV;
 	}
 
-	return r;
+	/* Load u-boot, mkimage header is 64 bytes. */
+	r = mtd_read(mtd, 0, sizeof(*header), &retlen, (void*) header);
+	if (r == 0 && retlen != sizeof(*header))
+		r = -EIO;
+	if (r != 0) {
+		printf("MTD Failed reading from device: %d\n", r);
+		return r;
+	}
+	if (image_get_magic(header) != FDT_MAGIC) {
+		printf("MTD image not of type FDT\n");
+		return -EINVAL;
+	}
+	struct spl_load_info load;
+	load.dev = mtd;
+	load.priv = NULL;
+	load.filename = NULL;
+	load.bl_len = 1;
+	load.read = spl_mtd_fit_read;
+	return spl_load_simple_fit(spl_image, &load, 0, header);
 }
 SPL_LOAD_IMAGE_METHOD("MTD", 0, BOOT_DEVICE_SPI, spl_mtd_load_image);
 
