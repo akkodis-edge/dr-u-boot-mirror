@@ -29,6 +29,7 @@
 #include <image.h>
 #include <sysreset.h>
 #include <wdt.h>
+#include <u-boot/rsa-mod-exp.h>
 #include <u-boot/rsa.h>
 #include "../common/platform_header.h"
 #include "../common/imx8m_ddrc_parse.h"
@@ -202,13 +203,98 @@ int board_fit_config_name_match(const char *name)
 	return 0;
 }
 
+#define PLATFORM_HEADER_SIGN_SIZE 512
+
+struct checksum_algo checksum_sha256 = {
+	.name = "sha256",
+	.checksum_len = SHA256_SUM_LEN,
+	.der_len = SHA256_DER_LEN,
+	.der_prefix = sha256_der_prefix,
+	.calculate = hash_calculate,
+};
+
+static int validate_platform_signature(const struct image_region* region, uint8_t *sig, uint sig_len)
+{
+	uint8_t checksum[SHA256_SUM_LEN];
+	uint8_t buf[PLATFORM_HEADER_SIGN_SIZE];
+	struct udevice *mod_exp_dev = NULL;
+	struct key_prop prop;
+	int r = 0;
+	int length = 0;
+	int sig_node = 0;
+	int pub_node = 0;
+	char *algo = NULL;
+
+	/* Check input */
+	if (sig_len != PLATFORM_HEADER_SIGN_SIZE) {
+		printf("platform header invalid signature length: %d\n", sig_len);
+		return -EINVAL;
+	}
+
+	/* Find public key in fdt /signature node */
+	sig_node = fdt_subnode_offset(gd->fdt_blob, 0, FIT_SIG_NODENAME);
+	if (sig_node < 0) {
+		printf("No /signature node found\n");
+		return -ENOENT;
+	}
+	pub_node = fdt_subnode_offset(gd->fdt_blob, sig_node, "key-platform");
+	if (pub_node < 0) {
+		printf("No /signature/key-platform node found\n");
+		return -ENOENT;
+	}
+	algo = fdt_getprop(gd->fdt_blob, pub_node, "algo", NULL);
+	if (!algo || strcmp(algo, "sha256,rsa4096") != 0) {
+		printf("Invalid /signature/key-platform algo %s\n", algo);
+		return -EFAULT;
+	}
+	prop.num_bits = fdtdec_get_int(gd->fdt_blob, pub_node, "rsa,num-bits", 0);
+	prop.n0inv = fdtdec_get_int(gd->fdt_blob, pub_node, "rsa,n0-inverse", 0);
+	prop.public_exponent = fdt_getprop(gd->fdt_blob, pub_node, "rsa,exponent", &length);
+	if (!prop.public_exponent || length < sizeof(uint64_t))
+		prop.public_exponent = NULL;
+	prop.exp_len = sizeof(uint64_t);
+	prop.modulus = fdt_getprop(gd->fdt_blob, pub_node, "rsa,modulus", NULL);
+	prop.rr = fdt_getprop(gd->fdt_blob, pub_node, "rsa,r-squared", NULL);
+	if (!prop.num_bits || !prop.modulus || !prop.rr) {
+		printf("Invalid /signature/key-platform\n");
+		return -EFAULT;
+	}
+
+	/* Calc checksum */
+	r = hash_calculate("sha256", region, 1, checksum);
+	if (r != 0) {
+		printf("platform header sha256 failed: %d\n", r);
+		return r;
+	}
+
+	/* validate signature */
+	r = uclass_get_device(UCLASS_MOD_EXP, 0, &mod_exp_dev);
+	if (r != 0) {
+		printf("No rsa mod exp\n");
+		return r;
+	}
+	r = rsa_mod_exp(mod_exp_dev, sig, sig_len, &prop, buf);
+	if (r != 0) {
+		printf("rsa mod exp failed: %d\n", r);
+		return r;
+	}
+	struct image_sign_info info;
+	info.checksum = &checksum_sha256;
+	r = padding_pkcs_15_verify(&info, buf, sig_len, checksum, SHA256_SUM_LEN);
+	if (r != 0) {
+		printf("rsa padding failed: %d\n", r);
+		return r;
+	}
+
+	return 0;
+}
+
 /*
  * Read in and validate blob of:
  * platform header
  * data
  * rsa 4096 signature of platform header + data
  */
-#define PLATFORM_HEADER_SIGN_SIZE 512
 static int read_platform_header(struct platform_header* platform_header, struct dram_timing_info* dram_timing_info)
 {
 	int r = 0;
@@ -263,23 +349,8 @@ static int read_platform_header(struct platform_header* platform_header, struct 
 	if (r != 0)
 		return r;
 
-	/* Prepare signature validation */
-	struct image_sign_info info;
-	memset(&info, '\0', sizeof(struct image_sign_info));
-	info.keyname = "platform";
-	info.name = "sha256,rsa4096";
-	info.checksum = image_get_checksum_algo(info.name);
-	info.crypto = image_get_crypto_algo(info.name);
-	info.padding = image_get_padding_algo("pkcs-1.5");
-	info.fdt_blob = gd->fdt_blob;
-	info.required_keynode = -1;
-	if (!info.checksum || !info.crypto || !info.padding) {
-		printf("invalid image info\n");
-		return -EIO;
-	}
-
 	/* Verify signature */
-	r = rsa_verify(&info, &region, 1, &buf[pos], PLATFORM_HEADER_SIGN_SIZE);
+	r = validate_platform_signature(&region, &buf[pos], PLATFORM_HEADER_SIGN_SIZE);
 	if (r != 0) {
 		printf("platform signature invalid: %d\n", r);
 		return r;
