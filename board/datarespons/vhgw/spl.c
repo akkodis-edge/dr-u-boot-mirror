@@ -28,16 +28,12 @@
 #include <mtd.h>
 #include <image.h>
 #include <sysreset.h>
+#include <wdt.h>
 #include <u-boot/rsa.h>
 #include "../common/platform_header.h"
 #include "../common/imx8m_ddrc_parse.h"
 
 DECLARE_GLOBAL_DATA_PTR;
-
-static void reset(void)
-{
-	sysreset_walk_halt(SYSRESET_COLD);
-}
 
 /* Defined in arch/arm/mach-imx/imx8m/soc.c */
 int imx8m_detect_secondary_image_boot(void);
@@ -161,7 +157,7 @@ void spl_board_init(void)
 	void* pheader = bloblist_add(CONFIG_BLOBLIST_DR_PLATFORM, sizeof(struct platform_header), 8);
 	if (pheader == NULL) {
 		printf("platform header blob registration failed\n");
-		reset();
+		hang();
 	}
 	memcpy(pheader, &platform_header, sizeof(struct platform_header));
 }
@@ -323,11 +319,18 @@ void board_init_f(ulong dummy)
 
 	ret = spl_init();
 	if (ret) {
-		debug("spl_init() failed: %d\n", ret);
-		reset();
+		printf("spl_init() failed: %d\n", ret);
+		sysreset_walk_halt(SYSRESET_COLD);
 	}
 
 	preloader_console_init();
+
+	/* Enable wdog1 with 120 second timer */
+	ret = uclass_get_device_by_name(UCLASS_WDT, "watchdog@30280000", &dev);
+	if (ret == 0)
+		ret = wdt_start(dev, 120 * 1000, 0);
+	if (ret < 0)
+		printf("Failed enabling watchdog: %d\n", ret);
 
 	enable_tzc380();
 
@@ -336,17 +339,19 @@ void board_init_f(ulong dummy)
 	/* Ensure all devices (and their partitions) are probed */
 	mtd_probe_devices();
 
-	/* CAAM must be instantiated for sha256 and mod_exp hw acceleration */
+	/* CAAM must be instantiated for sha256 and mod_exp hw acceleration
+	 * used when verifying RSA signature of platform header */
+	dev = NULL;
 	ret = uclass_get_device_by_name(UCLASS_MISC, "crypto@30900000", &dev);
-	if (ret < 0) {
+	if (ret != 0) {
 		printf("Failed enabling CAAM [%d]\n", ret);
-		reset();
+		hang();
 	}
 
 	ret = read_platform_header(&platform_header, &dram_timing_info);
 	if (ret != 0) {
 		printf("platform header failed: %d\n", ret);
-		reset();
+		hang();
 	}
 
 	printf("Platform: %s\n", platform_header.name);
