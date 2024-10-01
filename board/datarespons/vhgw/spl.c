@@ -28,6 +28,7 @@
 #include <mtd.h>
 #include <image.h>
 #include <sysreset.h>
+#include <u-boot/rsa.h>
 #include "../common/platform_header.h"
 #include "../common/imx8m_ddrc_parse.h"
 
@@ -205,17 +206,25 @@ int board_fit_config_name_match(const char *name)
 	return 0;
 }
 
+/*
+ * Read in and validate blob of:
+ * platform header
+ * data
+ * rsa 4096 signature of platform header + data
+ */
+#define PLATFORM_HEADER_SIGN_SIZE 512
 static int read_platform_header(struct platform_header* platform_header, struct dram_timing_info* dram_timing_info)
 {
 	int r = 0;
 	size_t retlen = 0;
+	u8 *buf = (u8*) CONFIG_DR_PLATFORM_LOADADDR;
+	loff_t pos = 0;
 	struct mtd_info* platform = get_mtd_by_partname("platform");
 	if (platform == NULL)
 		return -ENODEV;
-	u8 *buf = (u8*) CONFIG_DR_PLATFORM_LOADADDR;
 
 	/* Read and parse header */
-	r = mtd_read(platform, 0, PLATFORM_HEADER_SIZE, &retlen, buf);
+	r = mtd_read(platform, pos, PLATFORM_HEADER_SIZE, &retlen, buf);
 	if (r == 0 && retlen != PLATFORM_HEADER_SIZE)
 		r = -EIO;
 	if (r != 0)
@@ -225,38 +234,71 @@ static int read_platform_header(struct platform_header* platform_header, struct 
 		printf("platform_header corrupt: %d\n", r);
 		return r;
 	}
+	pos += retlen;
 
-	/* Read rest of platform data into RAM */
-	if (platform_header->total_size
-			< (PLATFORM_HEADER_SIZE + CONFIG_CSF_SIZE + IVT_TOTAL_LENGTH)) {
-		printf("platform_header total_size too small: %d\n", platform_header->total_size);
+	/* Check size seems valid and will fit into ram */
+	if ((platform->size - PLATFORM_HEADER_SIGN_SIZE) < platform_header->total_size
+		|| platform_header->total_size < PLATFORM_HEADER_SIZE
+		|| platform_header->total_size < platform_header->ddrc_blob_offset
+		|| platform_header->total_size < platform_header->ddrc_blob_size
+		|| (platform_header->total_size - platform_header->ddrc_blob_offset) < platform_header->ddrc_blob_size) {
+		printf("platform_header size invalid: %u\n", platform_header->total_size);
 		return -EBADF;
 	}
-	r = mtd_read(platform, PLATFORM_HEADER_SIZE, platform_header->total_size - PLATFORM_HEADER_SIZE,
-					&retlen, buf + PLATFORM_HEADER_SIZE);
-	if (r == 0 && retlen != platform_header->total_size - PLATFORM_HEADER_SIZE)
+
+	/* Read data */
+	r = mtd_read(platform, pos, platform_header->total_size - pos,
+					&retlen, &buf[pos]);
+	if (r == 0 && retlen != platform_header->total_size - pos)
+		r = -EIO;
+	if (r != 0)
+		return r;
+	pos += retlen;
+
+	/* platform header + data are signed */
+	struct image_region region;
+	region.data = buf;
+	region.size = pos;
+
+	/* Read signature */
+	r = mtd_read(platform, pos, PLATFORM_HEADER_SIGN_SIZE, &retlen, &buf[pos]);
+	if (r == 0 && retlen != PLATFORM_HEADER_SIGN_SIZE)
 		r = -EIO;
 	if (r != 0)
 		return r;
 
-	/* HAB signature verification */
-	r = imx_hab_authenticate_image(CONFIG_DR_PLATFORM_LOADADDR, platform_header->total_size,
-									CONFIG_DR_PLATFORM_IVT);
-	if (r != 0) {
-		printf("platform_header authentication failed\n");
-		return -EBADF;
+	/* Prepare signature validation */
+	struct image_sign_info info;
+	memset(&info, '\0', sizeof(struct image_sign_info));
+	info.keyname = "platform";
+	info.name = "sha256,rsa4096";
+	info.checksum = image_get_checksum_algo(info.name);
+	info.crypto = image_get_crypto_algo(info.name);
+	info.padding = image_get_padding_algo("pkcs-1.5");
+	info.fdt_blob = gd->fdt_blob;
+	info.required_keynode = -1;
+	if (!info.checksum || !info.crypto || !info.padding) {
+		printf("invalid image info\n");
+		return -EIO;
 	}
 
+	/* Verify signature */
+	r = rsa_verify(&info, &region, 1, &buf[pos], PLATFORM_HEADER_SIGN_SIZE);
+	if (r != 0) {
+		printf("platform signature invalid: %d\n", r);
+		return r;
+	}
+	pos += retlen;
 
 	/* DDR blob verification and parsing */
 	const uint32_t crc32_init = crc32(0L, Z_NULL, 0);
-	const uint32_t crc32_calc = crc32(crc32_init, buf + platform_header->ddrc_blob_offset, platform_header->ddrc_blob_size);
+	const uint32_t crc32_calc = crc32(crc32_init, &buf[platform_header->ddrc_blob_offset], platform_header->ddrc_blob_size);
 	if (platform_header->ddrc_blob_crc32 != crc32_calc) {
 		printf("dram_timing_info corrupt: crc32 mismatch\n");
 		return -EBADF;
 	}
 
-	r = parse_dram_timing_info(dram_timing_info, buf + platform_header->ddrc_blob_offset, platform_header->ddrc_blob_size);
+	r = parse_dram_timing_info(dram_timing_info, &buf[platform_header->ddrc_blob_offset], platform_header->ddrc_blob_size);
 	if (r != 0) {
 		printf("dram_timing_info corrupt: %d\n", r);
 		return r;
@@ -267,6 +309,7 @@ static int read_platform_header(struct platform_header* platform_header, struct 
 
 void board_init_f(ulong dummy)
 {
+	struct udevice *dev = NULL;
 	int ret;
 
 	arch_cpu_init();
@@ -292,6 +335,13 @@ void board_init_f(ulong dummy)
 
 	/* Ensure all devices (and their partitions) are probed */
 	mtd_probe_devices();
+
+	/* CAAM must be instantiated for sha256 and mod_exp hw acceleration */
+	ret = uclass_get_device_by_name(UCLASS_MISC, "crypto@30900000", &dev);
+	if (ret < 0) {
+		printf("Failed enabling CAAM [%d]\n", ret);
+		reset();
+	}
 
 	ret = read_platform_header(&platform_header, &dram_timing_info);
 	if (ret != 0) {
