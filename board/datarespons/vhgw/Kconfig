@@ -12,6 +12,14 @@ config SYS_CONFIG_NAME
 config IMX_CONFIG
 	default "board/datarespons/vhgw/imximage-spl.cfg"
 
+config PLATFORM_SIGNATURE
+	bool "Enable signature verification of platform header within SPL"
+	select SPL_RSA_VERIFY
+	select SPL_HASH
+	select SPL_RSA
+	select SPL_CRYPTO
+	default y
+
 source "board/datarespons/common/Kconfig"
 
 endif
