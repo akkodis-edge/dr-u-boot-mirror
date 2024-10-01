@@ -27,10 +27,16 @@
 #include <bloblist.h>
 #include <mtd.h>
 #include <image.h>
+#include <sysreset.h>
 #include "../common/platform_header.h"
 #include "../common/imx8m_ddrc_parse.h"
 
 DECLARE_GLOBAL_DATA_PTR;
+
+static void reset(void)
+{
+	sysreset_walk_halt(SYSRESET_COLD);
+}
 
 /* Defined in arch/arm/mach-imx/imx8m/soc.c */
 int imx8m_detect_secondary_image_boot(void);
@@ -154,7 +160,7 @@ void spl_board_init(void)
 	void* pheader = bloblist_add(CONFIG_BLOBLIST_DR_PLATFORM, sizeof(struct platform_header), 8);
 	if (pheader == NULL) {
 		printf("platform header blob registration failed\n");
-		hang();
+		reset();
 	}
 	memcpy(pheader, &platform_header, sizeof(struct platform_header));
 }
@@ -275,7 +281,7 @@ void board_init_f(ulong dummy)
 	ret = spl_init();
 	if (ret) {
 		debug("spl_init() failed: %d\n", ret);
-		hang();
+		reset();
 	}
 
 	preloader_console_init();
@@ -290,7 +296,7 @@ void board_init_f(ulong dummy)
 	ret = read_platform_header(&platform_header, &dram_timing_info);
 	if (ret != 0) {
 		printf("platform header failed: %d\n", ret);
-		hang();
+		reset();
 	}
 
 	printf("Platform: %s\n", platform_header.name);
