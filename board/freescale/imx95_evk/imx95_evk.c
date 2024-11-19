@@ -35,6 +35,8 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+extern int board_fix_fdt_fuse(void *fdt);
+
 int board_early_init_f(void)
 {
 	/* UART1: A55, UART2: M33, UART3: M7 */
@@ -682,6 +684,9 @@ static int board_fix_19x19_evk(void *fdt)
 
 int board_fix_fdt(void *fdt)
 {
+	/* Remove nodes based on fuses. */
+	board_fix_fdt_fuse(fdt);
+
 #if IS_ENABLED(CONFIG_TARGET_IMX95_15X15_EVK)
 	return board_fix_15x15_evk(fdt);
 #else
