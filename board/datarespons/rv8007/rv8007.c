@@ -37,7 +37,7 @@ int board_phys_sdram_size(phys_size_t *size)
 int board_init(void)
 {
 	struct udevice *dev = NULL;
-	int r = led_get_by_label("led-red", &dev);
+	int r = led_get_by_label("led-blue", &dev);
 	if (r == 0)
 		r = led_set_state(dev, LEDST_ON);
 	if (r != 0)

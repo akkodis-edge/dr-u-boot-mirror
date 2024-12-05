@@ -33,6 +33,12 @@
 			pwms = <&pwm3 0 1000000 0>;
 			color = <LED_COLOR_ID_RED>;
 			max-brightness = <65535>;
+		};
+
+		led-blue {
+			pwms = <&pwm1 0 1000000 0>;
+			color = <LED_COLOR_ID_BLUE>;
+			max-brightness = <65535>;
 			u-boot,default-brightness = <65535>;
 		};
 	};
@@ -256,6 +262,12 @@
 	maximum-speed = "high-speed";
 };
 
+&pwm1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm1>;
+	status = "okay";
+};
+
 &pwm3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm3>;
@@ -356,6 +368,12 @@
 	pinctrl_wdog: wdoggrp {
 		fsl,pins = <
 			MX8MP_IOMUXC_GPIO1_IO02__WDOG1_WDOG_B	0x166 /* WDOG_B */
+		>;
+	};
+
+	pinctrl_pwm1: pwm1grp {
+		fsl,pins = <
+			MX8MP_IOMUXC_GPIO1_IO08__PWM1_OUT		0x000 /* PWM_LEDB */
 		>;
 	};
 
