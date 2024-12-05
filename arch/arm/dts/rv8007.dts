@@ -5,6 +5,7 @@
 
 /dts-v1/;
 
+#include <dt-bindings/leds/common.h>
 #include "imx8mp.dtsi"
 
 / {
@@ -23,6 +24,17 @@
 		device_type = "memory";
 		reg = <0x0 0x40000000 0 0xc0000000>,
 		      <0x1 0x00000000 0 0xc0000000>;
+	};
+
+	front-led {
+		compatible = "pwm-leds";
+
+		led-red {
+			pwms = <&pwm3 0 1000000 0>;
+			color = <LED_COLOR_ID_RED>;
+			max-brightness = <65535>;
+			u-boot,default-brightness = <65535>;
+		};
 	};
 };
 
@@ -244,6 +256,12 @@
 	maximum-speed = "high-speed";
 };
 
+&pwm3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm3>;
+	status = "okay";
+};
+
 &iomuxc {
 	pinctrl_usb0: usb0grp {
 		fsl,pins = <
@@ -338,6 +356,12 @@
 	pinctrl_wdog: wdoggrp {
 		fsl,pins = <
 			MX8MP_IOMUXC_GPIO1_IO02__WDOG1_WDOG_B	0x166 /* WDOG_B */
+		>;
+	};
+
+	pinctrl_pwm3: pwm3grp {
+		fsl,pins = <
+			MX8MP_IOMUXC_GPIO1_IO10__PWM3_OUT		0x000 /* PWM_LEDR */
 		>;
 	};
 };
