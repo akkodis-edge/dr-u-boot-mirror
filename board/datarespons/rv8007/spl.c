@@ -264,6 +264,9 @@ void board_init_f(ulong dummy)
 
 	init_uart_clk(1);
 
+#ifndef CONFIG_SPL_BSS_SKIP_CLEAR
+#error "Board depends on BSS not being cleared by commit init"
+#endif
 	/* Need to clear bss early as mtd subsystem depends on it */
 	memset(__bss_start, 0, __bss_end - __bss_start);
 
