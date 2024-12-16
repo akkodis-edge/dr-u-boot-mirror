@@ -312,7 +312,7 @@ static void netc_phy_rst(const char *gpio_name, const char *label)
 
 }
 
-static void netc_regulator_enable(const char *devname)
+static void netc_regulator_enable(const char *devname, bool enable)
 {
 	int ret;
 	struct udevice *dev;
@@ -323,9 +323,10 @@ static void netc_regulator_enable(const char *devname)
 		return;
 	}
 
-	ret = regulator_set_enable_if_allowed(dev, true);
+	ret = regulator_set_enable_if_allowed(dev, enable);
 	if (ret) {
-		printf("Enable %s regulator %d\n", devname, ret);
+		printf("%s %s regulator %d\n",
+			enable ? "Enable": "Disable", devname, ret);
 		return;
 	}
 }
@@ -333,6 +334,9 @@ static void netc_regulator_enable(const char *devname)
 void netc_init(void)
 {
 	int ret;
+
+	ret = imx9_scmi_power_domain_enable(IMX95_PD_NETC, false);
+	udelay(10000);
 
 	/* Power up the NETC MIX. */
 	ret = imx9_scmi_power_domain_enable(IMX95_PD_NETC, true);
@@ -348,8 +352,24 @@ void netc_init(void)
 	netc_phy_rst("gpio@22_5", "ENET2_RST_B");
 #else
 	netc_phy_rst("i2c5_io@21_2", "ENET1_RST_B");
-	netc_regulator_enable("regulator-aqr-stby");
-	netc_regulator_enable("regulator-mac-stby");
+
+	/* Enable in SW count */
+	netc_regulator_enable("regulator-aqr-stby", true);
+	netc_regulator_enable("regulator-mac-stby", true);
+	netc_regulator_enable("regulator-aqr-en", true);
+	netc_regulator_enable("regulator-mac-en", true);
+
+	/* Disable regulator to have explicit reset to AQR PHY and clock generator */
+	udelay(10000);
+	netc_regulator_enable("regulator-aqr-stby", false);
+	netc_regulator_enable("regulator-mac-stby", false);
+	netc_regulator_enable("regulator-aqr-en", false);
+	netc_regulator_enable("regulator-mac-en", false);
+
+	udelay(10000);
+	netc_regulator_enable("regulator-aqr-stby", true);
+	netc_regulator_enable("regulator-mac-stby", true);
+
 #endif
 	pci_init();
 }
