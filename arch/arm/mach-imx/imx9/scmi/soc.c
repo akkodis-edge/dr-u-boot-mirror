@@ -976,7 +976,7 @@ int imx9_probe_mu(void)
 	if (ret)
 		return ret;
 
-#if defined(CONFIG_IMX_TRUSTY_OS) && defined(CONFIG_SPL_BUILD)
+#if defined(CONFIG_SPL_BUILD)
 	ret = uclass_get_device_by_name(UCLASS_MISC, "mailbox@47530000", &dev);
 #else
 	ret = uclass_get_device_by_name(UCLASS_MISC, "mailbox@47550000", &dev);
