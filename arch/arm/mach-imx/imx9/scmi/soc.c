@@ -839,8 +839,9 @@ static bool is_m7_off(void)
 
 int ft_system_setup(void *blob, struct bd_info *bd)
 {
+	const char *status = "disabled";
 	u32 val;
-	int ret = 0;
+	int ret = 0, nodeoff;
 
 	if (is_imx95()) {
 		val = BIT(6) | BIT(7); /* In case fuse read failure, disable PCIE */
@@ -851,6 +852,25 @@ int ft_system_setup(void *blob, struct bd_info *bd)
 			disable_pciea_node(blob);
 		if (val & BIT(7)) /* PCIE B */
 			disable_pcieb_node(blob);
+
+		if ((gd->arch.soc_rev >> 28) == 0xa) {
+			puts("disabling SMMU\n");
+
+			ret = fdt_increase_size(blob, 256);
+			if (ret) {
+				printf("Unable to increase fdt size, err=%s\n", fdt_strerror(ret));
+				return ret;
+			}
+			nodeoff = fdt_path_offset(blob, "/soc/bus@49000000/iommu@490d0000");
+			if (nodeoff > 0) {
+				ret = fdt_setprop(blob, nodeoff, "status", status,
+						  strlen(status) + 1);
+				if (ret) {
+					printf("Unable to disable SMMU, err=%s\n", fdt_strerror(ret));
+					return ret;
+				}
+			}
+		}
 	}
 
 	if (is_imx95() && is_m7_off()) {
