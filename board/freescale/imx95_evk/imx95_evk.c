@@ -462,6 +462,7 @@ int board_init(void)
 
 int board_late_init(void)
 {
+	char *fdtfile;
 #ifdef CONFIG_ENV_IS_IN_MMC
 	board_late_mmc_env_init();
 #endif
@@ -470,6 +471,14 @@ int board_late_init(void)
 #ifdef CONFIG_AHAB_BOOT
 	env_set("sec_boot", "yes");
 #endif
+
+	fdtfile = env_get("fdtfile");
+	if (!strcmp(fdtfile, "undefined")) {
+		if (is_imx95_a0() && IS_ENABLED(CONFIG_TARGET_IMX95_19X19_EVK))
+			env_set("fdtfile", "imx95a1-19x19-evk-it6263-lvds0.dtb");
+		else
+			env_set("fdtfile", CONFIG_DEFAULT_FDT_FILE);
+	}
 
 	return 0;
 }
