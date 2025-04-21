@@ -838,11 +838,54 @@ static bool is_m7_off(void)
 		return false;
 }
 
+static int disable_smmu_node(void *blob)
+{
+	struct scmi_imx_misc_cfg_info_out out = { 0 };
+	struct scmi_msg msg = SCMI_MSG(SCMI_IMX_PROTOCOL_ID_MISC,
+				       SCMI_IMX_MISC_CFG_INFO, out);
+	int ret, nodeoff;
+	bool disable_smmu_node = false;
+	const char *status = "disabled";
+
+	ret = devm_scmi_process_msg(gd->arch.scmi_dev, &msg);
+	if (out.status) {
+		printf("%s:%d fail\n", __func__, out.status);
+		return ret;
+	}
+
+	if (!strncmp(out.cfgname, "mx95alt", MISC_MAX_CFGNAME))
+		disable_smmu_node = true;
+
+	if ((gd->arch.soc_rev >> 28) == 0xa)
+		disable_smmu_node = true;
+
+	if (!disable_smmu_node)
+		return 0;
+
+	puts("disabling SMMU\n");
+
+	ret = fdt_increase_size(blob, 256);
+	if (ret) {
+		printf("Unable to increase fdt size, err=%s\n", fdt_strerror(ret));
+		return ret;
+	}
+	nodeoff = fdt_path_offset(blob, "/soc/bus@49000000/iommu@490d0000");
+	if (nodeoff > 0) {
+		ret = fdt_setprop(blob, nodeoff, "status", status,
+				  strlen(status) + 1);
+		if (ret) {
+			printf("Unable to disable SMMU, err=%s\n", fdt_strerror(ret));
+			return ret;
+		}
+	}
+
+	return 0;
+}
+
 int ft_system_setup(void *blob, struct bd_info *bd)
 {
-	const char *status = "disabled";
 	u32 val;
-	int ret = 0, nodeoff;
+	int ret = 0;
 
 	if (is_imx95()) {
 		val = BIT(6) | BIT(7); /* In case fuse read failure, disable PCIE */
@@ -854,24 +897,7 @@ int ft_system_setup(void *blob, struct bd_info *bd)
 		if (val & BIT(7)) /* PCIE B */
 			disable_pcieb_node(blob);
 
-		if ((gd->arch.soc_rev >> 28) == 0xa) {
-			puts("disabling SMMU\n");
-
-			ret = fdt_increase_size(blob, 256);
-			if (ret) {
-				printf("Unable to increase fdt size, err=%s\n", fdt_strerror(ret));
-				return ret;
-			}
-			nodeoff = fdt_path_offset(blob, "/soc/bus@49000000/iommu@490d0000");
-			if (nodeoff > 0) {
-				ret = fdt_setprop(blob, nodeoff, "status", status,
-						  strlen(status) + 1);
-				if (ret) {
-					printf("Unable to disable SMMU, err=%s\n", fdt_strerror(ret));
-					return ret;
-				}
-			}
-		}
+		disable_smmu_node(blob);
 	}
 
 	if (is_imx95() && is_m7_off()) {
