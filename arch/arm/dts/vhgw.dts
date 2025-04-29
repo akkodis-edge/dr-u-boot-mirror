@@ -26,6 +26,8 @@
 	};
 
 	signature {
+		required-mode = "any";
+
 		key-datarespons {
 			required = "conf";
 			algo = "sha256,rsa4096";
