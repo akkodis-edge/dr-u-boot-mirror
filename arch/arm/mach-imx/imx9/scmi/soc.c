@@ -1195,7 +1195,7 @@ ulong h_spl_load_read(struct spl_load_info *load, ulong off,
 #endif
 
 	/* Check if the buf is in non-secure world, otherwise copy from trampoline */
-	if ((ulong)buf < CFG_SYS_SDRAM_BASE || (ulong)buf + (count * sector) > ns_ddr_end) {
+	if ((ulong)buf < CFG_SYS_SDRAM_BASE || (ulong)buf + (count << bd->log2blksz) > ns_ddr_end) {
 		total = 0;
 		while (count) {
 			read_count = trampoline_cnt > count ? count : trampoline_cnt;
