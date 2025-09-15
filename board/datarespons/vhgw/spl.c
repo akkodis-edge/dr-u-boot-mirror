@@ -337,25 +337,45 @@ static int read_platform_header(struct platform_header* platform_header, struct 
 		return r;
 	pos += retlen;
 
-	/* platform header + data are signed */
-	struct image_region region;
-	region.data = buf;
-	region.size = pos;
-
-	/* Read signature */
-	r = mtd_read(platform, pos, PLATFORM_HEADER_SIGN_SIZE, &retlen, &buf[pos]);
-	if (r == 0 && retlen != PLATFORM_HEADER_SIGN_SIZE)
-		r = -EIO;
-	if (r != 0)
-		return r;
-
-	/* Verify signature */
-	r = validate_platform_signature(&region, &buf[pos], PLATFORM_HEADER_SIGN_SIZE);
-	if (r != 0) {
-		printf("platform signature invalid: %d\n", r);
-		return r;
+	/* Determine if platform header is signed with legacy HAB method or
+	 * basic RSA key.
+	 * With HAB method the IVT is placed after platform header.
+	 */
+	int signature_verified = 0;
+	if (pos >= PLATFORM_HEADER_SIZE + 4) {
+		const u32 ivt_magic = buf[PLATFORM_HEADER_SIZE + 3]
+							| (buf[PLATFORM_HEADER_SIZE + 2] << 8)
+							| (buf[PLATFORM_HEADER_SIZE + 1] << 16)
+							| (buf[PLATFORM_HEADER_SIZE] << 24);
+		if (ivt_magic == 0xd1002041
+			&& imx_hab_authenticate_image(CONFIG_DR_PLATFORM_LOADADDR, platform_header->total_size,
+											CONFIG_DR_PLATFORM_IVT) == 0) {
+				signature_verified = 1;
+		}
 	}
-	pos += retlen;
+
+	/* Always attempt RSA signature if HAB fails */
+	if (signature_verified != 1) {
+		/* platform header + data are signed */
+		struct image_region region;
+		region.data = buf;
+		region.size = pos;
+
+		/* Read signature */
+		r = mtd_read(platform, pos, PLATFORM_HEADER_SIGN_SIZE, &retlen, &buf[pos]);
+		if (r == 0 && retlen != PLATFORM_HEADER_SIGN_SIZE)
+			r = -EIO;
+		if (r != 0)
+			return r;
+
+		/* Verify signature */
+		r = validate_platform_signature(&region, &buf[pos], PLATFORM_HEADER_SIGN_SIZE);
+		if (r != 0) {
+			printf("platform signature invalid: %d\n", r);
+			return r;
+		}
+		pos += retlen;
+	}
 
 	/* DDR blob verification and parsing */
 	const uint32_t crc32_init = crc32(0L, Z_NULL, 0);
