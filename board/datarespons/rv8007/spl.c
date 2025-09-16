@@ -27,6 +27,8 @@
 #include <bloblist.h>
 #include <mtd.h>
 #include <image.h>
+#include <sysreset.h>
+#include <wdt.h>
 #include "../common/platform_header.h"
 #include "../common/imx8m_ddrc_parse.h"
 
@@ -258,6 +260,7 @@ static int read_platform_header(struct platform_header* platform_header, struct 
 
 void board_init_f(ulong dummy)
 {
+	struct udevice *dev = NULL;
 	int ret;
 
 	arch_cpu_init();
@@ -265,18 +268,25 @@ void board_init_f(ulong dummy)
 	init_uart_clk(1);
 
 #ifndef CONFIG_SPL_BSS_SKIP_CLEAR
-#error "Board depends on BSS not being cleared by commit init"
+#error "Board depends on BSS not being cleared by common init"
 #endif
 	/* Need to clear bss early as mtd subsystem depends on it */
 	memset(__bss_start, 0, __bss_end - __bss_start);
 
 	ret = spl_init();
 	if (ret) {
-		debug("spl_init() failed: %d\n", ret);
-		hang();
+		printf("spl_init() failed: %d\n", ret);
+		sysreset_walk_halt(SYSRESET_COLD);
 	}
 
 	preloader_console_init();
+
+	/* Enable wdog1 with 120 second timer */
+	ret = uclass_get_device_by_name(UCLASS_WDT, "watchdog@30280000", &dev);
+	if (ret == 0)
+		ret = wdt_start(dev, 120 * 1000, 0);
+	if (ret < 0)
+		printf("Failed enabling watchdog: %d\n", ret);
 
 	enable_tzc380();
 
