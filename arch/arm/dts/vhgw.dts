@@ -453,7 +453,32 @@
 	status = "okay";
 };
 
+&gpio4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_gpio4_hog>;
+
+	/* flash0 shares the SPI bus with an accelerometer which in turn is shared
+	 * with the board controller.
+	 * The board controller has a weak pull-up for accelerometer CS pin
+	 * to disable it. This CPU however has a reset state on the same CS pin which
+	 * enables a weak pull-down and depending on individual boards it varies
+	 * whether the pull-down/up is stronger.
+	 * The CS pin is here set high to ensure the accelerometer stays disabled.
+	 * */
+	gpio4-hog {
+		gpio-hog;
+		gpios = <23 GPIO_ACTIVE_HIGH>;
+		output-high;
+	};
+};
+
 &iomuxc {
+	pinctrl_gpio4_hog: gpiohog4grp {
+		fsl,pins = <
+			MX8MN_IOMUXC_SAI2_RXD0_GPIO4_IO23	0x0 /* SPI_CS-ACC */
+		>;
+	};
+
 	pinctrl_reg_usb0: usb0reggrp {
 		fsl,pins = <
 			MX8MN_IOMUXC_SAI2_TXC_GPIO4_IO25	0x100 /* USB_OTG_PWR_EN */

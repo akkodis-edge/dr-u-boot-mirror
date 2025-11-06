@@ -318,6 +318,10 @@
 	bootph-pre-ram;
 };
 
+&pinctrl_gpio4_hog {
+	bootph-pre-ram;
+};
+
 &gpio5 {
 	bootph-pre-ram;
 };

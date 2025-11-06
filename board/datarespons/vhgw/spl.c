@@ -425,6 +425,12 @@ void board_init_f(ulong dummy)
 
 	enable_tzc380();
 
+	/* Instantiate gpio4 for gpio-hogging of accelerometer CS */
+	dev = NULL;
+	ret = uclass_get_device_by_name(UCLASS_GPIO, "gpio@30230000", &dev);
+	if (ret != 0)
+		printf("Failed setting lsm6 CS: %d\n", ret);
+
 	power_init_board();
 
 	/* Ensure all devices (and their partitions) are probed */
