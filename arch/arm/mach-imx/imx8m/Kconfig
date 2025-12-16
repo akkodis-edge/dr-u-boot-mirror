@@ -397,7 +397,7 @@ config TARGET_RV8007
 	select IMX8MP
 	select SUPPORT_SPL
 	select IMX8M_LPDDR4
-	select BINMAN
+	select ARCH_MISC_INIT
 	select FSL_CAAM
 	select SPL_CRYPTO if SPL
 
