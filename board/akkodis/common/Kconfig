@@ -1,0 +1,68 @@
+
+menuconfig DR_COMMON_CONFIGS
+	bool "Data Respons common configs"
+	default y
+
+config DR_NVRAM
+	depends on DR_COMMON_CONFIGS && DM_MTD
+	select MTD_PARTITIONS
+	bool "DR NVRAM interface"
+	help
+	  Read/write variables in nvram
+	  Expects to find mtd partitions with names
+	  "system_a" and "system_b".
+
+config CMD_DR_NVRAM
+	depends on DR_COMMON_CONFIGS && DM_SPI_FLASH
+	select DR_NVRAM
+	bool "DR NVRAM interface CMD"
+	help
+	  Command for interface nvram
+	  
+config CMD_DR_SYSTEM_BOOT
+	select DR_NVRAM
+	bool "DR linux boot command"
+	
+config DR_BOOT_IMAGE_PATH
+	string "Path to boot image on disk"
+	default "/boot/fitImage"
+
+config DR_BOOT_IMAGE_LOADADDR
+	hex "Addr for loading boot image"
+	
+config CMD_DR_ANDROID_BOOT
+	select ANDROID_AB
+	select AVB_VERIFY
+	select LIBAVB
+	select ANDROID_BOOT_IMAGE
+	select AVB_SUPPORT
+	select ANDROID_DYNAMIC_PARTITION
+	select APPEND_BOOTARGS
+	select SUPPORT_RAW_INITRD
+	bool "DR android boot command"
+  
+config SPL_LIBNVRAM
+	bool "libnvram for SPL"
+
+config DR_PLATFORM_HEADER
+	bool "Platform header parser"
+	
+config SPL_DR_PLATFORM_HEADER
+	bool "Platform header parser for SPL"
+	
+config DR_IMX8M_DDRC
+	bool "iMX8M ddrc parser"
+	
+config SPL_DR_IMX8M_DDRC
+	bool "iMX8M ddrc parser for SPL"
+
+config BLOBLIST_DR_PLATFORM
+	hex "Bloblist tag for platform header"
+	default 0xfff003
+
+config DR_PLATFORM_LOADADDR
+	hex "Loadaddres for platform header"
+
+config DR_PLATFORM_IVT
+	hex "Offset for platform header IVT"
+	default 0x400
