@@ -57,7 +57,6 @@
 		binman_imx_fit: fit {
 			description = "Configuration to load ATF before U-Boot";
 			filename = "u-boot.itb";
-			fit,external-offset = <CONFIG_FIT_EXTERNAL_OFFSET>;
 			fit,fdt-list = "of-list";
 			#address-cells = <1>;
 
@@ -68,6 +67,7 @@
 					arch = "arm64";
 					compression = "none";
 					load = <CONFIG_TEXT_BASE>;
+					os = "u-boot";
 
 					uboot_blob: blob-ext {
 						filename = "u-boot-nodtb.bin";
