@@ -1,3 +1,6 @@
 [submodule "board/datarespons/common"]
 	path = board/datarespons/common
 	url = git@github.com:akkodis-edge/uboot-common.git
+[submodule "board/akkodis/common/libnvram"]
+	path = board/akkodis/common/libnvram
+	url = https://github.com/akkodis-edge/libnvram.git
