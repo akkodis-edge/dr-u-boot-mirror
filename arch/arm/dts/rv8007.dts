@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
  /*
-  * Copyright 2024 Data Respons Solutions AB
+  * Copyright 2025 Akkodis Edge Sweden AB
   */
 
 /dts-v1/;
@@ -9,8 +9,8 @@
 #include "imx8mp.dtsi"
 
 / {
-	model = "Data Respons Solutions RV8007";
-	compatible = "drs,rv8007", "fsl,imx8mp";
+	model = "Akkodis Edge RV8007";
+	compatible = "ake,rv8007", "fsl,imx8mp";
 
 	aliases {
 		spi0 = &ecspi1;

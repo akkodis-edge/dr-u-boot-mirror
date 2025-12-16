@@ -1,0 +1,14 @@
+if TARGET_RV8007
+
+config SYS_BOARD
+	default "rv8007"
+
+config SYS_VENDOR
+	default "akkodis"
+
+config SYS_CONFIG_NAME
+	default "rv8007"
+
+source "board/akkodis/common/Kconfig"
+
+endif

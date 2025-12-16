@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright 2024, Data Respons Solutions AB
+ * Copyright 2025, Akkodis Edge Sweden AB
  *
  */
 

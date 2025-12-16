@@ -438,6 +438,6 @@ source "board/toradex/smarc-imx8mp/Kconfig"
 source "board/toradex/verdin-imx8mm/Kconfig"
 source "board/toradex/verdin-imx8mp/Kconfig"
 source "board/datarespons/vhgw/Kconfig"
-source "board/datarespons/rv8007/Kconfig"
+source "board/akkodis/rv8007/Kconfig"
 
 endif
