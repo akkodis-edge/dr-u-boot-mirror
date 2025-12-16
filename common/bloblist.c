@@ -592,6 +592,9 @@ int bloblist_init(void)
 
 int bloblist_maybe_init(void)
 {
+	/* Block allocation before dram is initialized */
+	if (IS_ENABLED(CONFIG_SPL_BUILD))
+		return -EOPNOTSUPP;
 	if (CONFIG_IS_ENABLED(BLOBLIST) && !(gd->flags & GD_FLG_BLOBLIST_READY))
 		return bloblist_init();
 
