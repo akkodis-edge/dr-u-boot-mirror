@@ -4,7 +4,6 @@
  *
  */
 
-#include <common.h>
 #include <hang.h>
 #include <init.h>
 #include <spl.h>
@@ -74,7 +73,7 @@ struct mtd_info* get_mtd_by_partname(const char* partname)
 static ulong spl_mtd_fit_read(struct spl_load_info *load, ulong sector,
 			      ulong count, void *buf)
 {
-	struct mtd_info *mtd = load->dev;
+	struct mtd_info *mtd = load->priv;
 	size_t retlen = 0;
 	ulong r = 0;
 	r = mtd_read(mtd, sector, count, &retlen, buf);
@@ -124,11 +123,8 @@ static int spl_mtd_load_image(struct spl_image_info *spl_image,
 			continue;
 		}
 		struct spl_load_info load;
-		load.dev = mtd;
-		load.priv = NULL;
-		load.filename = NULL;
-		load.bl_len = 1;
-		load.read = spl_mtd_fit_read;
+		spl_load_init(&load, spl_mtd_fit_read, mtd, 1);
+
 		r = spl_load_simple_fit(spl_image, &load, 0, header);
 		if (r == 0)
 			break;

@@ -4,7 +4,6 @@
  *
  */
 
-#include <common.h>
 #include <stdlib.h>
 #include <env.h>
 #include <init.h>
