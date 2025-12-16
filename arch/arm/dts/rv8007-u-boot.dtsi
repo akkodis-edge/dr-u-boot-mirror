@@ -10,120 +10,118 @@
 		bootph-pre-ram;
 	};
 
-	binman: binman {
-		multiple-images;
-		u-boot-spl-ddr {
-			filename = "u-boot-spl-ddr.bin";
-			pad-byte = <0xff>;
-			align-size = <4>;
-			align = <4>;
-			u-boot-spl {
-				align-end = <4>;
-				filename = "u-boot-spl.bin";
-			};
-			ddr-1d-imem-fw {
-				filename = "lpddr4_pmu_train_1d_imem_202006.bin";
-				type = "blob-ext";
-				align-end = <4>;
-				size = <0x8000>;
-				pad-byte = <0x00>;
-			};
-			ddr-1d-dmem-fw {
-				filename = "lpddr4_pmu_train_1d_dmem_202006.bin";
-				type = "blob-ext";
-				align-end = <4>;
-				size = <0x4000>;
-				pad-byte = <0x00>;
-			};
-			ddr-2d-imem-fw {
-				filename = "lpddr4_pmu_train_2d_imem_202006.bin";
-				type = "blob-ext";
-				align-end = <4>;
-				size = <0x8000>;
-				pad-byte = <0x00>;
-			};
-			ddr-2d-dmem-fw {
-				filename = "lpddr4_pmu_train_2d_dmem_202006.bin";
-				type = "blob-ext";
-				align-end = <4>;
-			};
-		};
-		spl {
-			filename = "spl.img";
-			mkimage {
-				args = "-n spl/u-boot-spl.cfgout -T imx8mimage -e 0x920000";
-				blob {
+	binman {
+		binman_imx_spl: nxp-imx8mimage {
+				filename = "spl.img";
+				nxp,boot-from = "spi";
+				nxp,rom-version = <2>;
+				nxp,loader-address = <CONFIG_SPL_TEXT_BASE>;
+				args;	/* Needed by mkimage etype superclass */
+
+				section {
 					filename = "u-boot-spl-ddr.bin";
+					pad-byte = <0xff>;
+					align-size = <4>;
+					align = <4>;
+
+					u-boot-spl {
+						align-end = <4>;
+					};
+
+					ddr-1d-imem-fw {
+						filename = "lpddr4_pmu_train_1d_imem_202006.bin";
+						type = "blob-ext";
+						align-end = <4>;
+					};
+
+					ddr-1d-dmem-fw {
+						filename = "lpddr4_pmu_train_1d_dmem_202006.bin";
+						type = "blob-ext";
+						align-end = <4>;
+					};
+
+					ddr-2d-imem-fw {
+						filename = "lpddr4_pmu_train_2d_imem_202006.bin";
+						type = "blob-ext";
+						align-end = <4>;
+					};
+
+					ddr-2d-dmem-fw {
+						filename = "lpddr4_pmu_train_2d_dmem_202006.bin";
+						type = "blob-ext";
+						align-end = <4>;
+					};
 				};
 			};
-		};
-		itb {
+
+		binman_imx_fit: fit {
+			description = "Configuration to load ATF before U-Boot";
 			filename = "u-boot.itb";
-			align-size = <4096>;
-			fit {
-				description = "Configuration to load ATF before U-Boot";
-				fit,fdt-list = "of-list";
-				#address-cells = <1>;
-				images {
-					uboot {
-						arch = "arm64";
-						compression = "none";
-						description = "U-Boot (64-bit)";
-						load = <CONFIG_TEXT_BASE>;
-						type = "standalone";
-						uboot-blob {
-							filename = "u-boot-nodtb.bin";
-							type = "blob-ext";
-						};
-					};
-					atf {
-						arch = "arm64";
-						compression = "none";
-						description = "ARM Trusted Firmware";
-						entry = <0x970000>;
-						load = <0x970000>;
-						type = "firmware";
-						atf-blob {
-							type = "atf-bl31";
-						};
-					};
-					binman_fip: fip {
-						arch = "arm64";
-						compression = "none";
-						description = "Trusted Firmware FIP";
-						load = <0x40310000>;
-						type = "firmware";
-					};
-					tee {
-						arch = "arm64";
-						compression = "none";
-						description = "TEE os";
-						entry = <0x56000000>;
-						load = <0x56000000>;
-						type = "firmware";
-						tee-blob {
-							type = "tee-os";
-							filename = "tee-pager_v2.bin";
-						};
-					};
-					@fdt-SEQ {
-						compression = "none";
-						description = "NAME";
-						type = "flat_dt";
-						uboot-fdt-blob {
-							filename = "u-boot.dtb";
-							type = "blob-ext";
-						};
+			fit,external-offset = <CONFIG_FIT_EXTERNAL_OFFSET>;
+			fit,fdt-list = "of-list";
+			#address-cells = <1>;
+
+			images {
+				uboot {
+					description = "U-Boot (64-bit)";
+					type = "standalone";
+					arch = "arm64";
+					compression = "none";
+					load = <CONFIG_TEXT_BASE>;
+
+					uboot_blob: blob-ext {
+						filename = "u-boot-nodtb.bin";
 					};
 				};
-				configurations {
-					default = "@config-DEFAULT-SEQ";
-					binman_configuration: @config-SEQ {
-						description = "NAME";
-						fdt = "fdt-SEQ";
-						firmware = "uboot";
-						loadables = "atf", "tee";
+
+				atf {
+					description = "ARM Trusted Firmware";
+					type = "firmware";
+					arch = "arm64";
+					compression = "none";
+					load = <0x970000>;
+					entry = <0x970000>;
+
+					atf_blob: atf-blob {
+						filename = "bl31.bin";
+						type = "atf-bl31";
 					};
+				};
+
+				tee: tee {
+					description = "OP-TEE";
+					type = "tee";
+					arch = "arm64";
+					compression = "none";
+					os = "tee";
+					load = <CONFIG_IMX8M_OPTEE_LOAD_ADDR>;
+					entry = <CONFIG_IMX8M_OPTEE_LOAD_ADDR>;
+
+					tee-os {
+						filename = "tee-pager_v2.bin";
+						optional;
+					};
+				};
+
+				@fdt-SEQ {
+					description = "NAME";
+					type = "flat_dt";
+					compression = "none";
+
+					blob-ext {
+						filename = "u-boot.dtb";
+					};
+				};
+			};
+
+			configurations {
+				default = "@config-DEFAULT-SEQ";
+
+				@config-SEQ {
+					description = "NAME";
+					fdt = "fdt-SEQ";
+					firmware = "uboot";
+					loadables = "atf", "tee";
 				};
 			};
 		};
@@ -194,6 +192,9 @@
 
 &clk {
 	bootph-pre-ram;
+	/delete-property/ assigned-clocks;
+	/delete-property/ assigned-clock-parents;
+	/delete-property/ assigned-clock-rates;
 };
 
 &osc_24m {
