@@ -47,7 +47,7 @@ struct platform_header {
 	uint32_t rsvd[226]; //NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
 	/*
-	 * Total size of header, padding and blobs, size from start of header.
+	 * Total size of header, padding, blobs and signature, size from start of header.
 	 */
 	uint32_t total_size;
 	/*

@@ -67,5 +67,21 @@ config DR_PLATFORM_IVT
 	hex "Offset for platform header IVT"
 	default 0x400
 
+config AKE_PLATFORM_HEADER
+	bool "Platform header parser"
+	
+config SPL_AKE_PLATFORM_HEADER
+	bool "Platform header parser for SPL"
+
 config SPL_AKE_COMMON
+	depends on SPL
 	bool "Akkodis Edge common SPL functions"
+
+config SPL_AKE_PLATFORM_SIGNATURE
+	bool "Enable signature verification of platform header within SPL"
+	depends on SPL_AKE_COMMON && SPL_AKE_PLATFORM_HEADER
+	select SPL_RSA_VERIFY
+	select SPL_HASH
+	select SPL_RSA
+	select SPL_CRYPTO
+	select SPL_IMAGE_SIGN_INFO
