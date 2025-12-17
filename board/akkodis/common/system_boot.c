@@ -145,7 +145,7 @@ static int load_fit(const char* interface, int device, int part, const char* lab
 		return -EFAULT;
 	}
 	loff_t fit_size = 0;
-	r = fs_read(CONFIG_DR_BOOT_IMAGE_PATH, CONFIG_DR_BOOT_IMAGE_LOADADDR, 0, 0, &fit_size);
+	r = fs_read(CONFIG_AKE_BOOT_IMAGE_PATH, CONFIG_AKE_BOOT_IMAGE_LOADADDR, 0, 0, &fit_size);
 	fs_close();
 	if (r) {
 		printf("BOOT: Failed reading image\n");
@@ -173,9 +173,9 @@ static int load_fit(const char* interface, int device, int part, const char* lab
 /* fit_conf: Optionally override nvram SYS_FIT_CONF */
 static int boot_fit(const char* fit_conf)
 {
-	/* Build bootm args -- 0x[CONFIG_DR_BOOT_IMAGE_LOADADDR]#[CONFIG] */
+	/* Build bootm args -- 0x[CONFIG_AKE_BOOT_IMAGE_LOADADDR]#[CONFIG] */
 	char image_addr[17];
-	sprintf(image_addr, "%lx", (unsigned long) CONFIG_DR_BOOT_IMAGE_LOADADDR);
+	sprintf(image_addr, "%lx", (unsigned long) CONFIG_AKE_BOOT_IMAGE_LOADADDR);
 	int arglen = strlen(image_addr) + 1;
 	/* check optional config */
 	const char *conf = fit_conf ? fit_conf : nvram_get(sys_fit_conf);
