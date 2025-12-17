@@ -1,8 +1,10 @@
 #include <spl.h>
 #include <mtd.h>
 #include <dm/uclass.h>
+#include <u-boot/zlib.h>
 #include <u-boot/rsa-mod-exp.h>
 #include <u-boot/rsa.h>
+#include <asm/mach-imx/hab.h>
 #include "platform_header.h"
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -47,15 +49,17 @@ static const char* spl_mtd_partname(void)
 	return "u-boot";
 }
 
-static ulong spl_mtd_fit_read(struct spl_load_info *load, ulong sector,
+static ulong spl_mtd_read(struct spl_load_info *load, ulong sector,
 			      ulong count, void *buf)
 {
 	struct mtd_info *mtd = load->priv;
 	size_t retlen = 0;
 	ulong r = 0;
 	r = mtd_read(mtd, sector, count, &retlen, buf);
-	if (r != 0)
+	if (r != 0) {
+		debug("%s: mtd_read error: %lu\n", __func__, r);
 		return 0;
+	}
 	return (ulong) retlen;
 }
 
@@ -90,7 +94,7 @@ static int spl_mtd_load_image(struct spl_image_info *spl_image,
 		return -EINVAL;
 	}
 	struct spl_load_info load;
-	spl_load_init(&load, spl_mtd_fit_read, mtd, 1);
+	spl_load_init(&load, spl_mtd_read, mtd, 1);
 
 	return spl_load_simple_fit(spl_image, &load, 0, header);
 }
@@ -116,14 +120,8 @@ static int fdt_rsa_pubkey(const void* blob, int node, struct key_prop* prop)
 	return 0;
 }
 
-/*
- * 0x0     - platform_header
- * 0x400   - IVT (optional)
- * 0x420   - CSF (optional)
- * + 0x200 - blobs (optional)
- * + x     - signature digest
- */
-int validate_platform_signature(u8* data, uint size)
+/* Signature digest at end of data blob */
+static int validate_platform_signature(u8* data, uint size)
 {
 	struct udevice *mod_exp_dev = NULL;
 	struct key_prop prop;
@@ -157,11 +155,13 @@ int validate_platform_signature(u8* data, uint size)
 	/* Only RSA supported  */
 	if (memcmp(info.crypto->name, "rsa", 3) != 0)
 		return -EOPNOTSUPP;
-
+	/* Find RSA utilities */
+	r = uclass_get_device(UCLASS_MOD_EXP, 0, &mod_exp_dev);
+	if (r != 0)
+		return -EOPNOTSUPP;
 	info.padding = image_get_padding_algo("pkcs-1.5");
 	if (!info.padding)
 		return -EOPNOTSUPP;
-
 	r = fdt_rsa_pubkey(gd->fdt_blob, pub_node, &prop);
 	if (r != 0)
 		return r;
@@ -177,35 +177,128 @@ int validate_platform_signature(u8* data, uint size)
 	struct image_region data_region;
 	data_region.data = data;
 	data_region.size = size - info.crypto->key_len;
-	r = info.checksum->calculate(info.checksum->name, &data_region, 1, hash);
-	if (r != 0) {
-		printf("Failed checksum calculation: %d\n", r);
-		return -EFAULT;
-	}
-
 	struct image_region sig_region;
 	sig_region.data = data_region.data + data_region.size;
 	sig_region.size = info.crypto->key_len;
+	r = info.checksum->calculate(info.checksum->name, &data_region, 1, hash);
+	if (r != 0)
+		return -EFAULT;
 
-	/* Find Modular Exp implementation */
-	r = uclass_get_device(UCLASS_MOD_EXP, 0, &mod_exp_dev);
-	if (r != 0) {
-		printf("No rsa mod exp\n");
-		return r;
-	}
 	u8 buf[info.crypto->key_len];
 	r = rsa_mod_exp(mod_exp_dev, sig_region.data, sig_region.size, &prop, buf);
-	if (r != 0) {
-		printf("rsa mod exp failed: %d\n", r);
-		return r;
-	}
+	if (r != 0)
+		return -EFAULT;
 
 	r = info.padding->verify(&info, buf, info.crypto->key_len, hash, info.checksum->checksum_len);
-	if (r != 0) {
-		printf("rsa padding failed: %d\n", r);
-		return r;
+	if (r != 0)
+		return -EBADF;
+
+	return 0;
+}
+#else
+int validate_platform_signature(u8* data, uint size)
+{
+	return -EOPNOTSUPP;
+}
+#endif // CONFIG_SPL_AKE_PLATFORM_SIGNATURE
+
+#ifdef CONFIG_SPL_AKE_PLATFORM_HEADER
+/*
+ * Read in and validate blob of:
+ * 0x0   - 0x400:  platform header
+ * +n:             data blobs defined in header
+ * +n:             signature digest
+ *
+ * For legacy reasons it's possible to "dual sign"
+ * the platform header also with imx HABv4.
+ * Using HABv4 is not recommended as it will require
+ * SPL, platform header and u-boot fit to all be signed
+ * with the same IMGn/CSFn keys as HABv4 can't change
+ * keys once they have been loaded during boot.
+ * Layout using HABv4:
+ * 0x0   - 0x400:  platform header
+ * 0x400 - 0x420:  IVT
+ * 0x420 - 0x2420: CSF
+ * +n:             data blobs defined in header
+ * +n:             signature digest
+ */
+int read_platform_header(u8* buf, size_t buf_size, struct platform_header* platform_header, struct spl_load_info* load)
+{
+	int r = 0;
+	loff_t pos = 0;
+
+	if (buf_size < PLATFORM_HEADER_SIZE)
+		return -EINVAL;
+
+	/* Read and parse header */
+	ulong bytes = load->read(load, pos, PLATFORM_HEADER_SIZE, buf);
+	if (bytes == 0 || bytes != PLATFORM_HEADER_SIZE)
+		return -EIO;
+	r = parse_header(platform_header, buf, PLATFORM_HEADER_SIZE);
+	if (r != 0)
+		return -EBADF;
+	pos += bytes;
+
+	/* Check size seems valid and will fit into ram */
+	if (buf_size < platform_header->total_size
+		|| platform_header->total_size < PLATFORM_HEADER_SIZE
+		|| platform_header->total_size < platform_header->ddrc_blob_offset
+		|| platform_header->total_size < platform_header->ddrc_blob_size
+		|| (platform_header->total_size - platform_header->ddrc_blob_offset) < platform_header->ddrc_blob_size)
+		return -EBADF;
+
+	/* Read remaining data, if any */
+	bytes = load->read(load, pos, platform_header->total_size - pos, &buf[pos]);
+	if (bytes == 0 || bytes != platform_header->total_size - pos)
+		return -EIO;
+	pos += bytes;
+
+	/* DDR blob verification, if provided */
+	if (platform_header->ddrc_blob_size != 0) {
+		const uint32_t crc32_init = crc32(0L, Z_NULL, 0);
+		const uint32_t crc32_calc = crc32(crc32_init, &buf[platform_header->ddrc_blob_offset], platform_header->ddrc_blob_size);
+		if (platform_header->ddrc_blob_crc32 != crc32_calc)
+			return -EBADF;
+	}
+
+	int signature_verified = 0;
+
+	/* verify with imx HAB */
+	if (signature_verified != 1
+			&& IS_ENABLED(CONFIG_IMX_HAB)
+			&& (pos >= PLATFORM_HEADER_SIZE + 4)) {
+		const u32 ivt_magic = buf[PLATFORM_HEADER_SIZE + 3]
+							| (buf[PLATFORM_HEADER_SIZE + 2] << 8)
+							| (buf[PLATFORM_HEADER_SIZE + 1] << 16)
+							| (buf[PLATFORM_HEADER_SIZE] << 24);
+		if (ivt_magic == 0xd1002041
+			&& imx_hab_authenticate_image((uintptr_t) buf, platform_header->total_size, PLATFORM_HEADER_SIZE) == 0) {
+				signature_verified = 1;
+		}
+	}
+
+	/* Verify with appended signature digest */
+	if (signature_verified != 1) {
+		r = validate_platform_signature(buf, pos);
+		if (r != 0) {
+			printf("platform signature invalid: %d\n", r);
+			return r;
+		}
 	}
 
 	return 0;
 }
-#endif // CONFIG_SPL_AKE_PLATFORM_SIGNATURE
+
+#ifdef CONFIG_SPL_MTD
+int read_platform_header_mtd(u8* buf, struct platform_header* platform_header, const char* partition)
+{
+	struct mtd_info* mtd = get_mtd_by_partname(partition);
+	if (!mtd)
+		return -ENODEV;
+
+	struct spl_load_info load;
+	spl_load_init(&load, spl_mtd_read, mtd, 1);
+	return read_platform_header(buf, mtd->size, platform_header, &load);
+}
+#endif // CONFIG_SPL_MTD
+#endif // CONFIG_SPL_AKE_PLATFORM_HEADER
