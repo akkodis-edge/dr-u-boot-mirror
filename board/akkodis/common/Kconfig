@@ -66,3 +66,6 @@ config DR_PLATFORM_LOADADDR
 config DR_PLATFORM_IVT
 	hex "Offset for platform header IVT"
 	default 0x400
+
+config SPL_AKE_COMMON
+	bool "Akkodis Edge common SPL functions"
