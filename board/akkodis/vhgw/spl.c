@@ -91,7 +91,7 @@ void spl_board_init(void)
 		printf("Failed to find clock node. Check device tree\n");
 
 	/* Store platform header in dram */
-	void* pheader = bloblist_add(CONFIG_BLOBLIST_DR_PLATFORM, sizeof(struct platform_header), 8);
+	void* pheader = bloblist_add(CONFIG_AKE_PLATFORM_HEADER_BLOBLIST, sizeof(struct platform_header), 8);
 	if (pheader == NULL) {
 		printf("platform header blob registration failed\n");
 		hang();
@@ -184,14 +184,14 @@ void board_init_f(ulong dummy)
 		hang();
 	}
 
-	ret = read_platform_header_mtd((u8*) CONFIG_DR_PLATFORM_LOADADDR, &platform_header, "platform");
+	ret = read_platform_header_mtd((u8*) CONFIG_AKE_PLATFORM_HEADER_LOADADDR, &platform_header, "platform");
 	if (ret != 0) {
 		printf("platform header failed: %d\n", ret);
 		hang();
 	}
 
 	ret = parse_dram_timing_info(&dram_timing_info,
-			(u8*) CONFIG_DR_PLATFORM_LOADADDR + platform_header.ddrc_blob_offset,
+			(u8*) CONFIG_AKE_PLATFORM_HEADER_LOADADDR + platform_header.ddrc_blob_offset,
 			platform_header.ddrc_blob_size);
 	if (ret != 0) {
 		printf("dram_timing_info corrupt: %d\n", ret);

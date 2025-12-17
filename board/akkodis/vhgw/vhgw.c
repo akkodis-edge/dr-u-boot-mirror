@@ -26,7 +26,7 @@ void board_debug_uart_init(void)
 
 int board_phys_sdram_size(phys_size_t *size)
 {
-	struct platform_header* platform_header = bloblist_find(CONFIG_BLOBLIST_DR_PLATFORM,
+	struct platform_header* platform_header = bloblist_find(CONFIG_AKE_PLATFORM_HEADER_BLOBLIST,
 												sizeof(struct platform_header));
 	if (size == NULL)
 		return -EINVAL;
