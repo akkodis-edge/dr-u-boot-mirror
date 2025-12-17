@@ -17,6 +17,13 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#ifdef CONFIG_DEBUG_UART_BOARD_INIT
+void board_debug_uart_init(void)
+{
+
+}
+#endif
+
 int board_phys_sdram_size(phys_size_t *size)
 {
 	struct platform_header* platform_header = bloblist_find(CONFIG_BLOBLIST_DR_PLATFORM,

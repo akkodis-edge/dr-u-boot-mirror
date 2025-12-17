@@ -35,6 +35,33 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#ifdef CONFIG_DEBUG_UART_BOARD_INIT
+
+/* Required configs:
+ *  CONFIG_DEBUG_UART=y
+ *  CONFIG_DEBUG_UART_BASE=0x30890000
+ *  CONFIG_DEBUG_UART_CLOCK=24000000
+ *  CONFIG_DEBUG_UART_BOARD_INIT=y
+ *  CONFIG_DEBUG_UART_ANNOUNCE=y
+ */
+
+#include <asm/arch/imx8mn_pins.h>
+
+#define UART_PAD_CTRL   (PAD_CTL_DSE6 | PAD_CTL_FSEL1)
+
+static const iomux_v3_cfg_t uart_pads[] = {
+		IMX8MN_PAD_SAI3_TXFS__UART2_DCE_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
+		IMX8MN_PAD_SAI3_TXC__UART2_DCE_TX | MUX_PAD_CTRL(UART_PAD_CTRL),
+};
+
+void board_debug_uart_init(void)
+{
+	init_uart_clk(1);
+
+	imx_iomux_v3_setup_multiple_pads(uart_pads, ARRAY_SIZE(uart_pads));
+}
+#endif
+
 /* Defined in arch/arm/mach-imx/imx8m/soc.c */
 int imx8m_detect_secondary_image_boot(void);
 
@@ -86,7 +113,7 @@ static const char* spl_mtd_partname(void)
 static ulong spl_mtd_fit_read(struct spl_load_info *load, ulong sector,
 			      ulong count, void *buf)
 {
-	struct mtd_info *mtd = load->dev;
+	struct mtd_info *mtd = load->priv;
 	size_t retlen = 0;
 	ulong r = 0;
 	r = mtd_read(mtd, sector, count, &retlen, buf);
