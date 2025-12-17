@@ -388,7 +388,6 @@ config TARGET_VHGW
 	select IMX8MN
 	select SUPPORT_SPL
 	select IMX8M_LPDDR4
-	select BINMAN
 	select FSL_CAAM
 	select SPL_CRYPTO if SPL
 
@@ -437,7 +436,7 @@ source "board/variscite/imx8mn_var_som/Kconfig"
 source "board/toradex/smarc-imx8mp/Kconfig"
 source "board/toradex/verdin-imx8mm/Kconfig"
 source "board/toradex/verdin-imx8mp/Kconfig"
-source "board/datarespons/vhgw/Kconfig"
+source "board/akkodis/vhgw/Kconfig"
 source "board/akkodis/rv8007/Kconfig"
 
 endif

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
  /*
-  * Copyright 2020 NXP
+  * Copyright 2025, Akkodis Edge Sweden AB
   */
 
 /dts-v1/;
@@ -9,8 +9,8 @@
 #include "imx8mn.dtsi"
 
 / {
-	model = "Data Respons Solutions VHGW";
-	compatible = "drs,vhgw", "fsl,imx8mn";
+	model = "Akkodis Edge VHGW";
+	compatible = "ake,vhgw", "fsl,imx8mn";
 
 	aliases {
 		spi0 = &ecspi1;
