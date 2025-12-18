@@ -4,14 +4,8 @@
  *
  */
 
-#include <stdlib.h>
-#include <env.h>
-#include <init.h>
 #include <asm/global_data.h>
-//#include <power/regulator.h>
 #include <bloblist.h>
-#include <fdt_support.h>
-#include <mapmem.h>
 #include <dm/uclass.h>
 #include <../common/platform_header.h>
 
@@ -40,18 +34,6 @@ int board_phys_sdram_size(phys_size_t *size)
 	return 0;
 }
 
-int power_init_board(void)
-{
-/*	int r = 0;
-
-	const int verbose = 1;
-	r = regulators_enable_boot_on(verbose);
-	if (r)
-		printf("Failed enabling boot regulators: %d\n", r);
-*/
-	return 0;
-}
-
 int board_init(void)
 {
 	struct udevice *dev = NULL;
@@ -61,10 +43,5 @@ int board_init(void)
 	r = uclass_get_device_by_name(UCLASS_MISC, "usb2512bi@2c", &dev);
 	if (r < 0)
 		printf("Failed enabling USB hub [%d]\n", r);
-	return 0;
-}
-
-int board_late_init(void)
-{
 	return 0;
 }
