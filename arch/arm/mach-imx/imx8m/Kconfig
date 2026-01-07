@@ -400,6 +400,15 @@ config TARGET_RV8007
 	select FSL_CAAM
 	select SPL_CRYPTO if SPL
 
+config TARGET_SDB8000
+	bool "SDB8000"
+	select IMX8MM
+	select SUPPORT_SPL
+	select IMX8M_LPDDR4
+	select FSL_CAAM
+	select ARCH_MISC_INIT
+	select SPL_CRYPTO if SPL
+
 endchoice
 
 source "board/advantech/imx8mp_rsb3720a1/Kconfig"
@@ -438,5 +447,6 @@ source "board/toradex/verdin-imx8mm/Kconfig"
 source "board/toradex/verdin-imx8mp/Kconfig"
 source "board/akkodis/vhgw/Kconfig"
 source "board/akkodis/rv8007/Kconfig"
+source "board/akkodis/sdb8000/Kconfig"
 
 endif

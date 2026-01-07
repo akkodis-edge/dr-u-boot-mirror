@@ -1,0 +1,14 @@
+if TARGET_SDB8000
+
+config SYS_BOARD
+	default "sdb8000"
+
+config SYS_VENDOR
+	default "akkodis"
+
+config SYS_CONFIG_NAME
+	default "sdb8000"
+
+source "board/akkodis/common/Kconfig"
+
+endif
