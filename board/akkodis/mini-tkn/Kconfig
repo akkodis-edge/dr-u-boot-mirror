@@ -1,0 +1,12 @@
+if TARGET_MINI_TKN
+
+config SYS_BOARD
+	default "mini-tkn"
+
+config SYS_VENDOR
+	default "akkodis"
+
+config SYS_CONFIG_NAME
+	default "mini_tkn"
+
+endif

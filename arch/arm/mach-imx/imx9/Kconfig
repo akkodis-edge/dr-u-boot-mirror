@@ -97,6 +97,12 @@ config TARGET_IMX95_19X19_EVK
 	imply BOOTSTD_FULL
 	imply OF_UPSTREAM
 
+config TARGET_MINI_TKN
+	bool "mini_tkn"
+	select IMX95
+	imply BOOTSTD_BOOTCOMMAND
+	imply BOOTSTD_FULL
+
 endchoice
 
 source "board/freescale/imx91_evk/Kconfig"
@@ -106,6 +112,6 @@ source "board/freescale/imx93_qsb/Kconfig"
 source "board/phytec/phycore_imx93/Kconfig"
 source "board/variscite/imx93_var_som/Kconfig"
 source "board/freescale/imx95_evk/Kconfig"
-
+source "board/akkodis/mini-tkn/Kconfig"
 endif
 
