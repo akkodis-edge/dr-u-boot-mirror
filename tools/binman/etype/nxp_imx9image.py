@@ -34,9 +34,9 @@ class Entry_nxp_imx9image(Entry_mkimage):
         self.config_filename = tools.get_output_filename(cfg_path)
         accepted_keys = [
             'append', 'boot-from', 'cntr-version', 'container', 'dummy-ddr',
-            'dummy-v2x', 'hold', 'image', 'soc-type'
+            'dummy-v2x', 'hold', 'image', 'soc-type', 'data'
         ]
-        external_files = ['oei-m33-tcm.bin', 'm33_image.bin', 'bl31.bin']
+        external_files = ['oei-m33-tcm.bin', 'm33_image.bin', 'bl31.bin', 'oei-m33-data.bin']
 
         with open(self.config_filename, 'w', encoding='utf-8') as f:
             for prop in self._node.props.values():
@@ -58,6 +58,16 @@ class Entry_nxp_imx9image(Entry_mkimage):
                         print(f"file '{image_path}' does not exist. flash.bin may be not-functional.")
                     else:
                         f.write(f'image {combined}\n')
+                elif key.startswith('data') and isinstance(value, list) and len(value) == 3:
+                    file = value[1]
+                    image_path = os.path.join(tools.get_output_dir(), value[1])
+                    value[1] = image_path
+                    combined = ' '.join(map(str, value))
+
+                    if file in external_files and not os.path.exists(value[1]):
+                        print(f"file '{image_path}' does not exist. flash.bin may be not-functional.")
+                    else:
+                        f.write(f'data {combined}\n')
                 elif isinstance(value, str):
                     if key.startswith('append'):
                         file_path = os.path.join(tools.get_output_dir(), value)
