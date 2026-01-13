@@ -35,6 +35,7 @@ config AKE_BOOT_IMAGE_PATH
 
 config AKE_BOOT_IMAGE_LOADADDR
 	hex "Addr for loading boot image"
+	default 0x0
 	
 config CMD_AKE_ANDROID_BOOT
 	select ANDROID_AB
@@ -62,6 +63,7 @@ config AKE_PLATFORM_HEADER_LOADADDR
 	default 0x920000 if IMX8MM
 	default 0x961000 if IMX8MN
 	default 0x971000 if IMX8MP
+	default 0x0
 
 config AKE_PLATFORM_HEADER
 	bool "Platform header parser"
