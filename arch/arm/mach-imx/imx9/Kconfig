@@ -100,8 +100,6 @@ config TARGET_IMX95_19X19_EVK
 config TARGET_MINI_TKN
 	bool "mini_tkn"
 	select IMX95
-	imply BOOTSTD_BOOTCOMMAND
-	imply BOOTSTD_FULL
 
 endchoice
 

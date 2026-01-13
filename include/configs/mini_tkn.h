@@ -10,6 +10,13 @@
 #include <linux/stringify.h>
 #include <asm/arch/imx-regs.h>
 
+#define CONFIG_BOOTCOMMAND \
+	"echo starting boot procedure...;" \
+	"if system_load mmc 1 --label SERVICEUSB; then " \
+		"system_boot;" \
+	"fi;" \
+	"echo no boot device found;"
+
 #define CFG_SYS_INIT_RAM_ADDR	0x90000000
 #define CFG_SYS_INIT_RAM_SIZE	0x200000
 
@@ -17,7 +24,7 @@
 #define PHYS_SDRAM				0x90000000
 /* Totally 16GB */
 #define PHYS_SDRAM_SIZE			0x70000000 /* 2GB - 256MB DDR */
-#define PHYS_SDRAM_2_SIZE		0x380000000 /* 14GB */
+#define PHYS_SDRAM_2_SIZE		0x80000000 /* 2GB */
 
 #define WDOG_BASE_ADDR			WDG3_BASE_ADDR
 
