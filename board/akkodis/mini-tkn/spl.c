@@ -25,6 +25,7 @@ int spl_board_boot_device(enum boot_device boot_dev_spl)
 	case MMC2_BOOT:
 		return BOOT_DEVICE_MMC2;
 	case USB_BOOT:
+	case NAND_BOOT: /* B0 returns NAND_BOOT on SDP boot*/
 		return BOOT_DEVICE_BOARD;
 	default:
 		return BOOT_DEVICE_NONE;

@@ -89,7 +89,13 @@
 				args;
 
 #ifndef CONFIG_IMX95_A0
-				cntr-version = <2>;
+				/* Seems B0 should set the version to <2>. However loading by SDP
+				 * fails in common/spl/spl_imx_container.c in
+				 * CONFIG_SPL_IMX_CONTAINER_USE_TRAMPOLINE section.
+				 *
+				 * Stick to <0> for now.
+				 */
+				/*cntr-version = <2>;*/
 #endif
 				boot-from = "sd";
 				soc-type = "IMX9";
