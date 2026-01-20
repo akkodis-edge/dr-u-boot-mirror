@@ -67,9 +67,7 @@
 				append = "mx95b0-ahab-container.img";
 #endif
 				container;
-#ifdef CONFIG_IMX95_A0
 				data0 = "m33", "oei-m33-dat.bin", "0x4aa80000";
-#endif
 #ifndef CONFIG_IMX95_A0
 				dummy-ddr;
 #endif
