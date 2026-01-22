@@ -12,6 +12,11 @@ DECLARE_GLOBAL_DATA_PTR;
 #ifdef CONFIG_IMX8M
 /* Defined in arch/arm/mach-imx/imx8m/soc.c */
 int imx8m_detect_secondary_image_boot(void);
+#else
+int imx8m_detect_secondary_image_boot(void)
+{
+	return 0;
+}
 #endif
 
 #ifdef CONFIG_SPL_MTD
@@ -67,12 +72,7 @@ static int spl_mtd_load_image(struct spl_image_info *spl_image,
 			      struct spl_boot_device *bootdev)
 {
 	struct mtd_info *mtd = NULL;
-	struct legacy_img_hdr *header = NULL;
-	size_t retlen = 0;
-	int r = 0;
 	const char* partname = spl_mtd_partname();
-
-	header = spl_get_load_buffer(-sizeof(*header), sizeof(*header));
 
 	printf("MTD load: %s\n", partname);
 	mtd = get_mtd_by_partname(partname);
@@ -81,8 +81,15 @@ static int spl_mtd_load_image(struct spl_image_info *spl_image,
 		return -ENODEV;
 	}
 
+	struct spl_load_info load;
+	spl_load_init(&load, spl_mtd_read, mtd, 1);
+
+#ifdef CONFIG_SPL_LOAD_FIT
 	/* Load u-boot, mkimage header is 64 bytes. */
-	r = mtd_read(mtd, 0, sizeof(*header), &retlen, (void*) header);
+	struct legacy_img_hdr *header = spl_get_load_buffer(-sizeof(*header), sizeof(*header));
+
+	size_t retlen = 0;
+	int r = mtd_read(mtd, 0, sizeof(*header), &retlen, (void*) header);
 	if (r == 0 && retlen != sizeof(*header))
 		r = -EIO;
 	if (r != 0) {
@@ -93,10 +100,13 @@ static int spl_mtd_load_image(struct spl_image_info *spl_image,
 		printf("MTD image not of type FDT\n");
 		return -EINVAL;
 	}
-	struct spl_load_info load;
-	spl_load_init(&load, spl_mtd_read, mtd, 1);
 
 	return spl_load_simple_fit(spl_image, &load, 0, header);
+#endif
+#ifdef CONFIG_SPL_LOAD_IMX_CONTAINER
+	return spl_load_imx_container(spl_image, &load, 0);
+#endif
+	return -EOPNOTSUPP;
 }
 SPL_LOAD_IMAGE_METHOD("MTD", 0, BOOT_DEVICE_SPI, spl_mtd_load_image);
 #endif // CONFIG_SPL_MTD
