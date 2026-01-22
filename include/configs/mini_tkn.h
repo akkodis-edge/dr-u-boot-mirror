@@ -12,7 +12,12 @@
 
 #define CONFIG_BOOTCOMMAND \
 	"echo starting boot procedure...;" \
-	"if system_load mmc 1 --label SERVICEUSB; then " \
+	"echo Trying SD...;" \
+	"if system_load mmc 1;then " \
+		"system_boot;" \
+	"fi;" \
+	"echo Trying MMC...;" \
+	"if system_load mmc 0;then " \
 		"system_boot;" \
 	"fi;" \
 	"echo no boot device found;"
