@@ -127,9 +127,53 @@
 		reg = <0>;
 		#address-cells = <1>;
 		#size-cells = <1>;
-		spi-max-frequency = <133000000>;
+		/*
+		 * FIXME: Limit to fairly low frequency to start with,
+		 * come back here and find a higher and stable
+		 * frequency.
+		 */
+		spi-max-frequency = <10000000>;
 		spi-tx-bus-width = <4>;
 		spi-rx-bus-width = <4>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			cfg@0 {
+				/*
+				 * 0x0 OFTAD key blob
+				 * 0x400 FlexSPI Config Block
+				 */
+				label = "cfg";
+				reg = <0x000000 0x001000>;
+			};
+			spl@1000 {
+				label = "spl";
+				reg = <0x001000 0x1ff000>;
+			};
+			u-boot@200000 {
+				label = "u-boot";
+				reg = <0x200000 0x200000>;
+			};
+			system_a@400000 {
+				label = "system_a";
+				reg = <0x400000 0x010000>;
+			};
+			system_b@410000 {
+				label = "system_b";
+				reg = <0x410000 0x010000>;
+			};
+			user_a@420000 {
+				label = "user_a";
+				reg = <0x420000 0x010000>;
+			};
+			user_b@430000 {
+				label = "user_b";
+				reg = <0x430000 0x010000>;
+			};
+		};
 	};
 };
 

@@ -11,6 +11,7 @@
 #include <asm/sections.h>
 #include <hang.h>
 #include <init.h>
+#include <mtd.h>
 #include <spl.h>
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -18,6 +19,8 @@ DECLARE_GLOBAL_DATA_PTR;
 int spl_board_boot_device(enum boot_device boot_dev_spl)
 {
 	switch (boot_dev_spl) {
+	case SPI_NOR_BOOT:
+		return BOOT_DEVICE_SPI;
 	case SD1_BOOT:
 	case MMC1_BOOT:
 		return BOOT_DEVICE_MMC1;
@@ -67,6 +70,13 @@ void board_init_f(ulong dummy)
 
 	debug("SOC: 0x%x\n", gd->arch.soc_rev);
 	debug("LC: 0x%x\n", gd->arch.lifecycle);
+
+#ifndef CONFIG_SPL_BSS_SKIP_CLEAR
+#error "Board depends on BSS not being cleared by common init"
+#endif
+
+	/* Ensure all devices (and their partitions) are probed */
+	mtd_probe_devices();
 
 	board_init_r(NULL, 0);
 }

@@ -251,6 +251,25 @@
 	status = "disabled";
 };
 
+&flexspi1 {
+	bootpth-all;
+};
+
+&flash0 {
+	bootph-all;
+	partitions {
+		bootph-pre-ram;
+		u-boot@200000 {
+			bootph-all;
+			read-only;
+		};
+	};
+};
+
+&pinctrl_flexspi1 {
+	bootph-all;
+};
+
 &pinctrl_uart1 {
 	bootph-pre-ram;
 };

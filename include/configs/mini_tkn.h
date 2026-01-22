@@ -28,4 +28,6 @@
 
 #define WDOG_BASE_ADDR			WDG3_BASE_ADDR
 
+#define CONFIG_SPL_BSS_SKIP_CLEAR
+
 #endif /* MINI_TKN_H__ */
