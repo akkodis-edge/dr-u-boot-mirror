@@ -40,6 +40,11 @@ void spl_board_init(void)
 	puts("Normal Boot\n");
 }
 
+unsigned long board_spl_mmc_get_uboot_raw_sector(struct mmc *mmc, unsigned long raw_sect)
+{
+	return CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR;
+}
+
 void board_init_f(ulong dummy)
 {
 	int ret;
