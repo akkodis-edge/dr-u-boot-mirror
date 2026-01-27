@@ -93,7 +93,7 @@
 				 *
 				 * Stick to <0> for now.
 				 */
-				/*cntr-version = <2>;*/
+				cntr-version = <0>;
 #endif
 				boot-from = "sd";
 				soc-type = "IMX9";
@@ -247,6 +247,14 @@
 	bootph-pre-ram;
 };
 
+&usdhc2 {
+	bootph-pre-ram;
+};
+
+&reg_usdhc2_vmmc {
+	bootph-pre-ram;
+};
+
 &wdog3 {
 	status = "disabled";
 };
@@ -283,5 +291,21 @@
 };
 
 &pinctrl_usdhc1_200mhz {
+	bootph-pre-ram;
+};
+
+&pinctrl_usdhc2 {
+	bootph-pre-ram;
+};
+
+&pinctrl_usdhc2_100mhz {
+	bootph-pre-ram;
+};
+
+&pinctrl_usdhc2_200mhz {
+	bootph-pre-ram;
+};
+
+&pinctrl_reg_usdhc2_vmmc {
 	bootph-pre-ram;
 };
