@@ -1,0 +1,85 @@
+menuconfig AKE_COMMON_CONFIGS
+	bool "Akkodis Edge common configs"
+	default y
+
+config AKE_NVRAM
+	depends on DM_MTD
+	select MTD_PARTITIONS
+	select AKE_LIBNVRAM
+	bool "Akkodis Edge NVRAM interface"
+	help
+	  Read/write variables in nvram
+	  Expects to find mtd partitions with names
+	  "system_a" and "system_b".
+
+config AKE_LIBNVRAM
+	bool "libnvram parser library"
+
+config SPL_AKE_LIBNVRAM
+	bool "libnvram parser library for spl"
+
+config CMD_AKE_NVRAM
+	depends on DM_SPI_FLASH
+	select AKE_NVRAM
+	bool "Akkodis Edge NVRAM interface CMD"
+	help
+	  Command for interface nvram
+	  
+config CMD_AKE_SYSTEM_BOOT
+	select AKE_NVRAM
+	bool "Akkodis Edge linux boot command"
+	
+config AKE_BOOT_IMAGE_PATH
+	string "Path to boot image on disk"
+	default "/boot/fitImage"
+
+config AKE_BOOT_IMAGE_LOADADDR
+	hex "Addr for loading boot image"
+	default 0x0
+	
+config CMD_AKE_ANDROID_BOOT
+	select ANDROID_AB
+	select AVB_VERIFY
+	select LIBAVB
+	select ANDROID_BOOT_IMAGE
+	select AVB_SUPPORT
+	select ANDROID_DYNAMIC_PARTITION
+	select APPEND_BOOTARGS
+	select SUPPORT_RAW_INITRD
+	bool "DR android boot command"
+	
+config AKE_IMX8M_DDRC
+	bool "iMX8M ddrc parser"
+	
+config SPL_AKE_IMX8M_DDRC
+	bool "iMX8M ddrc parser for SPL"
+
+config AKE_PLATFORM_HEADER_BLOBLIST
+	hex "Bloblist tag for platform header"
+	default 0xfff003
+
+config AKE_PLATFORM_HEADER_LOADADDR
+	hex "Loadaddres for platform header"
+	default 0x920000 if IMX8MM
+	default 0x961000 if IMX8MN
+	default 0x971000 if IMX8MP
+	default 0x0
+
+config AKE_PLATFORM_HEADER
+	bool "Platform header parser"
+	
+config SPL_AKE_PLATFORM_HEADER
+	bool "Platform header parser for SPL"
+
+config SPL_AKE_COMMON
+	depends on SPL
+	bool "Akkodis Edge common SPL functions"
+
+config SPL_AKE_PLATFORM_SIGNATURE
+	bool "Enable signature verification of platform header within SPL"
+	depends on SPL_AKE_COMMON && SPL_AKE_PLATFORM_HEADER
+	select SPL_RSA_VERIFY
+	select SPL_HASH
+	select SPL_RSA
+	select SPL_CRYPTO
+	select SPL_IMAGE_SIGN_INFO
