@@ -1,0 +1,18 @@
+if TARGET_AKE_EAGLE
+
+config SYS_BOARD
+	default "eagle"
+
+config SYS_VENDOR
+	default "akkodis"
+
+config SYS_CONFIG_NAME
+	default "ake-eagle"
+
+config SKUGPIO
+	bool
+	default y
+
+source "board/akkodis/common/Kconfig"
+
+endif
