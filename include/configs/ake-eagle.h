@@ -15,6 +15,15 @@
 
 #define CONFIG_BOOTCOMMAND \
 	"echo starting boot procedure...;" \
+	"echo Trying USB...;"\
+	"if usb start; then " \
+		"if system_load usb 0 --label SERVICEUSB; then " \
+			"usb stop;" \
+			"system_boot;" \
+		"else " \
+			"usb stop;" \
+		"fi;" \
+	"fi;" \
 	"echo Trying SD...;" \
 	"if system_load mmc 1;then " \
 		"system_boot;" \
