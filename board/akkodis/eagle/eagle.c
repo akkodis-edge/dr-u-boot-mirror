@@ -13,6 +13,7 @@
 #include <dm/uclass.h>
 #include <dm/uclass-internal.h>
 #include <linux/errno.h>
+#include <linux/delay.h>
 #include <stdbool.h>
 #include <scmi_agent.h>
 #include <scmi_protocols.h>
@@ -33,6 +34,29 @@ static int imx9_scmi_power_domain_enable(u32 domain, bool enable)
 	return scmi_pwd_state_set(gd->arch.scmi_dev, 0, domain, enable ? 0 : BIT(30));
 }
 
+void netc_init(void)
+{
+	/*
+	 * We're not using ethernet in u-boot, however linux does not
+	 * as of 6.18.0 support setting MAC from OTP fuses.
+	 * Bring up ethernet enough for the enetc driver to set MAC from OTP fuses.
+	 * Linux will then retrieve and reuse the MAC from enetc registers.
+	 */
+	int ret;
+
+	ret = imx9_scmi_power_domain_enable(IMX95_PD_NETC, false);
+	udelay(10000);
+
+	/* Power up the NETC MIX. */
+	ret = imx9_scmi_power_domain_enable(IMX95_PD_NETC, true);
+	if (ret) {
+		printf("SCMI_POWWER_STATE_SET Failed for NETC MIX\n");
+		return;
+	}
+	set_clk_netc(ENET_125MHZ);
+	pci_init();
+}
+
 int board_init(void)
 {
 	int ret;
@@ -44,6 +68,8 @@ int board_init(void)
 
 	imx9_scmi_power_domain_enable(IMX95_PD_DISPLAY, false);
 	imx9_scmi_power_domain_enable(IMX95_PD_CAMERA, false);
+
+	netc_init();
 
 	power_on_m7("mx95alt");
 
