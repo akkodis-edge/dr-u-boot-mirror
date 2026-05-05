@@ -668,6 +668,17 @@ config TARGET_O4_IMX6ULL_NANO
 	  Support for www.out4.ru O4-iMX6UL-NANO platform
 	  based on Freescale's i.MX6UL/i.MX6ULL SoC.
 
+config TARGET_CE_IMX6_01
+	bool "ce-imx6-01"
+	depends on MX6QDL
+	select DM
+	select DM_THERMAL
+	select SUPPORT_SPL
+	imply CMD_DM
+	select FSL_CAAM
+	select ARCH_MISC_INIT
+	select BINMAN
+
 endchoice
 
 config SYS_SOC
@@ -720,5 +731,6 @@ source "board/udoo/neo/Kconfig"
 source "board/wandboard/Kconfig"
 source "board/BuR/brppt2/Kconfig"
 source "board/out4/o4-imx6ull-nano/Kconfig"
+source "board/datarespons/ce-imx6-01/Kconfig"
 
 endif
