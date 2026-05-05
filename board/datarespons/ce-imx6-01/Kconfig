@@ -1,0 +1,15 @@
+if TARGET_CE_IMX6_01
+
+config SYS_BOARD
+	default "ce-imx6-01"
+
+config SYS_VENDOR
+	default "datarespons"
+
+config SYS_CONFIG_NAME
+	default "ce-imx6-01"
+
+config IMX_CONFIG
+	default "board/datarespons/ce-imx6-01/mkimage.cfg"
+
+endif
