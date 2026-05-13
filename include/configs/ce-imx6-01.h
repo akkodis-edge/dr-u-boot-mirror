@@ -27,8 +27,8 @@
 	"if legacy_load mmc 0; then " \
 		"legacy_boot;" \
 	"fi;" \
-	"echo no boot device found;"
-
+	"echo no boot device found;" \
+	"reset;"
 
 /* Physical Memory Map */
 #define PHYS_SDRAM                     MMDC0_ARB_BASE_ADDR
