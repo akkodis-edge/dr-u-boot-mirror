@@ -7,6 +7,7 @@
 #include <part.h>
 #include <inttypes.h>
 #include <command.h>
+#include <env.h>
 #include <image.h>
 #include <fs.h>
 #include <asm/arch/sys_proto.h>
@@ -311,6 +312,12 @@ static int load_legacy(const char* interface, int device, int part, const char* 
 		r = load_legacy_kernel(dev, &part_info, partnr);
 	if (r != 0)
 		return r;
+
+	/* Disable relocation of fdt and initrd */
+	if (env_set_hex("fdt_high", ~0UL) != 0)
+		printf("BOOT: WARN: failed disabling fdt relocation\n");
+	if (env_set_hex("initrd_high", ~0UL) != 0)
+		printf("BOOT: WARN: failed disabling ramdisk relocation\n");
 
 	return 0;
 }
