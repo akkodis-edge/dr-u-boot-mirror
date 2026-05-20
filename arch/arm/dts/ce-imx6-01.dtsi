@@ -22,18 +22,6 @@
 		stdout-path = &uart1;
 	};
 
-	reg_usb_otg: reg-usb-otg {
-		compatible = "regulator-fixed";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_reg_usb_otg>;
-		regulator-name = "reg_usb_otg";
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		gpio = <&gpio3 22 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
-		regulator-always-on;
-	};
-
 	clk_32k_wifi: clk-32k-wifi {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
@@ -529,7 +517,6 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usbotg>;
 	status = "okay";
-	vbus-supply = <&reg_usb_otg>;
 	disable-over-current;
 	dr_mode = "host";
 };
@@ -555,6 +542,9 @@
 	pinctrl_usbotg: usbotggrp {
 		fsl,pins = <
 			MX6QDL_PAD_ENET_RX_ER__USB_OTG_ID   0x17059
+			/* linux <= 4.14 depends on usb power being controlled
+			 * in mode USB_OTG_PWR and not as a GPIO. */
+			MX6QDL_PAD_EIM_D22__USB_OTG_PWR		0x2070 			/* USB_OTG_PWR_EN */
 			/*MX6QDL_PAD_KEY_ROW1__GPIO4_IO09		0x17059*/			/* USB_OTG_OC */
 		>;
 	};
@@ -672,12 +662,6 @@
 		fsl,pins = <
 			MX6QDL_PAD_SD1_CMD__GPIO1_IO18		0x2070			/* GP_LED_R_STATUS */
 			MX6QDL_PAD_SD1_CLK__GPIO1_IO20		0x2070			/* GP_LED_G_STATUS */
-		>;
-	};
-
-	pinctrl_reg_usb_otg: regusbotggrp {
-		fsl,pins = <
-			MX6QDL_PAD_EIM_D22__GPIO3_IO22	0x2070 			/* USB_OTG_PWR_EN */
 		>;
 	};
 
