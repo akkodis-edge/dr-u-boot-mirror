@@ -346,9 +346,13 @@ static int boot_legacy(void)
 	return -EFAULT;
 }
 
-/* Return 0 if root detected */
+/* partition /data has been shipped with both label "data" and "service". */
 static const char* data_label = "data";
+static const char* service_label = "service";
+/* If not found we fallback to the partition index, the partition ordering
+ * has by best effort been kept stable */
 #define DATA_PARTNO 3
+/* Return 0 if root detected */
 static int root_swap(const char* interface, int device, int* rootfs_partnr)
 {
 	/* Find device */
@@ -360,13 +364,16 @@ static int root_swap(const char* interface, int device, int* rootfs_partnr)
 
 	/* Find partition */
 	struct disk_partition data_info;
-	/* Search by label first  */
+	/* Search by data label first  */
 	int partnr = part_get_info_by_name(dev, data_label, &data_info);
+	/* Search by service label second */
+	if (partnr < 1 )
+		partnr = part_get_info_by_name(dev, service_label, &data_info);
 	/* Fallback to index */
-	if (partnr == -1 && part_get_info(dev, DATA_PARTNO, &data_info) == 0)
+	if (partnr < 1 && part_get_info(dev, DATA_PARTNO, &data_info) == 0)
 		partnr = DATA_PARTNO;
 
-	if (partnr != -1) {
+	if (partnr > 0) {
 		printf("SWAP: %s %d:%d#\"%s\": %s\n", interface, device, partnr, data_info.name, data_info.uuid);
 	}
 	else {
