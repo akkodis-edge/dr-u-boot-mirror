@@ -14,13 +14,13 @@
 
 /*
  * Boot order:
- * - USB partition with label TESTDRIVE
+ * - USB partition with label TESTDRIVE, fallback to first partition if label not found
  * - mmc0 partition with A/B support
  */
 #define CONFIG_BOOTCOMMAND \
 	"echo starting boot procedure...;" \
 	"if usb start; then " \
-		"if legacy_load usb 0 --label TESTDRIVE --enforce-initrd; then " \
+		"if legacy_load usb 0 --label TESTDRIVE --part 1 --enforce-initrd; then " \
 			"legacy_boot;" \
 		"fi;" \
 	"fi;" \
