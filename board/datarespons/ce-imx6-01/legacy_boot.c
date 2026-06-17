@@ -348,7 +348,7 @@ static const char* data_label = "data";
 static const char* service_label = "service";
 /* If not found we fallback to the partition index, the partition ordering
  * has by best effort been kept stable */
-#define DATA_PARTNO 3
+#define DATA_PARTNO 4
 /* Return 0 if root detected */
 static int root_swap(const char* interface, int device, int* rootfs_partnr)
 {
