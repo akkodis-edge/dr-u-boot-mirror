@@ -514,7 +514,7 @@ static int do_legacy_load(struct cmd_tbl* cmdtp, int flag, int argc,
 }
 
 U_BOOT_CMD(
-	legacy_load, 7, 1, do_legacy_load, "Load bootable linux to memory",
+	legacy_load, 8, 1, do_legacy_load, "Load bootable linux to memory",
 	"legacy_load interface device [args]   -- With root swap support\n"
 	"Args:\n"
 	"  --label          -- gpt label of root partition, disables root swap\n"
