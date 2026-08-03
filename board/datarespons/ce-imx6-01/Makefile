@@ -7,5 +7,5 @@
 ifdef CONFIG_SPL_BUILD
 obj-y += spl.o
 else
-obj-y += board.o legacy_boot.o
+obj-y += board.o legacy_boot.o factory.o
 endif
