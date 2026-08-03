@@ -18,6 +18,11 @@
  * - mmc0 partition with A/B support
  */
 #define CONFIG_BOOTCOMMAND \
+	"if is_factory_boot; then " \
+		"echo factory boot detected...;" \
+		"factory_init;" \
+		"fastboot usb 0;" \
+	"fi;" \
 	"echo starting boot procedure...;" \
 	"if usb start; then " \
 		"if legacy_load usb 0 --label TESTDRIVE --part 1 --enforce-initrd; then " \
