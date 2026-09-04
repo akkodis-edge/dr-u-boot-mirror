@@ -1,0 +1,14 @@
+if TARGET_AKE_RHINO
+
+config SYS_BOARD
+	default "rhino"
+
+config SYS_VENDOR
+	default "akkodis"
+
+config SYS_CONFIG_NAME
+	default "ake-rhino"
+
+source "board/akkodis/common/Kconfig"
+
+endif
