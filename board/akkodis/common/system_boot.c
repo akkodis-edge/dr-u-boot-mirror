@@ -118,25 +118,23 @@ static int load_fit(const char* interface, int device, int part, const char* lab
 	struct disk_partition part_info;
 	int partnr = -1;
 	/* Search by label first, if provided */
-	if (label) {
+	if (label)
 		partnr = part_get_info_by_name(dev, label, &part_info);
-	}
+
 	/* If not found, search by partition index, if provided */
-	if (partnr == -1 && part != -1) {
-		r = part_get_info(dev, part, &part_info);
-		if (!r) {
-			partnr = part;
-		}
+	if (partnr < 1 && part != -1) {
+		if (part_get_info(dev, part, &part_info) == 0)
+				partnr = part;
 	}
-	if (partnr != -1) {
-		printf("BOOT: %s %d:%d#\"%s\": %s\n", interface, device, partnr, part_info.name, part_info.uuid);
-	}
-	else {
+
+	if (partnr < 1) {
 		printf("BOOT: failed finding boot partition on %s %d%s%s%s%s\n", interface, device,
 				part != -1 ? ":" : "", part != -1 ? simple_itoa(part) : "",
 				label ? "#" : "", label ? label : "");
 		return -EFAULT;
 	}
+
+	printf("BOOT: %s %d:%d#\"%s\": %s\n", interface, device, partnr, part_info.name, part_info.uuid);
 
 	/* Read image */
 	r = fs_set_blk_dev_with_part(dev, partnr);
