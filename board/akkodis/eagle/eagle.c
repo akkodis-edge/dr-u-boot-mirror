@@ -59,6 +59,7 @@ void netc_init(void)
 
 int board_init(void)
 {
+	struct udevice *dev = NULL;
 	int ret;
 	ret = imx9_scmi_power_domain_enable(IMX95_PD_HSIO_TOP, true);
 	if (ret) {
@@ -72,6 +73,11 @@ int board_init(void)
 	netc_init();
 
 	power_on_m7("mx95alt");
+
+	/* Instantiate usb hub */
+	ret = uclass_get_device_by_name(UCLASS_MISC, "usb2512bi@2c", &dev);
+	if (ret < 0)
+		printf("Failed enabling USB hub [%d]\n", ret);
 
 	return 0;
 }

@@ -79,34 +79,6 @@
 	bootph-pre-ram;
 };
 
-&usdhc2 {
-	bootph-pre-ram;
-};
-
-&pinctrl_usdhc2 {
-	bootph-pre-ram;
-};
-
-&pinctrl_usdhc2_100mhz {
-	bootph-pre-ram;
-};
-
-&pinctrl_usdhc2_200mhz {
-	bootph-pre-ram;
-};
-
-&pinctrl_usdhc2_gpio {
-	bootph-pre-ram;
-};
-
-&reg_usdhc2_vmmc {
-	bootph-pre-ram;
-};
-
-&pinctrl_reg_usdhc2_vmmc {
-	bootph-pre-ram;
-};
-
 &lpuart1 {
 	bootph-pre-ram;
 };
