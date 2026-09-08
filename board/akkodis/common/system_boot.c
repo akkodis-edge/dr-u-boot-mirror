@@ -165,6 +165,10 @@ static int load_fit(const char* interface, int device, int part, const char* lab
 			return -ENOMEM;
 	}
 
+	/* Disable relocation of initrd */
+	if (env_set_hex("initrd_high", ~0UL) != 0)
+		printf("BOOT: WARN: failed disabling ramdisk relocation\n");
+
 	return 0;
 }
 
