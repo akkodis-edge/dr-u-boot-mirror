@@ -932,6 +932,12 @@ enum env_location arch_env_get_location(enum env_operation op, int prio)
 		break;
 	}
 
+	/* Booting from MMCn_BOOT with CONFIG_ENV_IS_NOWHERE results
+	 * in env_loc being set to ENVL_UNKNOWN which causes
+	 * boot to fail at relocation, i.e. last print is from ATF */
+	if (env_loc == ENVL_UNKNOWN && IS_ENABLED(CONFIG_ENV_IS_NOWHERE))
+		env_loc = ENVL_NOWHERE;
+
 	return env_loc;
 }
 
