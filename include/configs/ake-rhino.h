@@ -29,8 +29,9 @@
 			"if system_load mmc 0;then " \
 					"system_boot;" \
 			"fi;" \
-			"echo no boot device found;" \
-		"fi;"
+		"fi;" \
+		"echo no boot device found;" \
+		"reset;"
 
 #define CFG_SYS_INIT_RAM_ADDR	0x90000000
 #define CFG_SYS_INIT_RAM_SIZE	0x200000
