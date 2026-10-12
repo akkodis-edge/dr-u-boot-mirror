@@ -124,6 +124,24 @@
 	};
 };
 
+&lpi2c8 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&pinctrl_lpi2c8>;
+
+    clock-frequency = <400000>;
+    status = "okay";
+
+    se052f: secure-element@48 {
+        compatible = "nxp,se05x";
+        reg = <0x48>;
+
+        reset-gpios = <&gpio5 14 GPIO_ACTIVE_LOW>;
+
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_se052f>;
+    };
+};
+
 &mu7 {
 	status = "okay";
 };
@@ -279,6 +297,19 @@
 			IMX95_PAD_UART1_RXD__AONMIX_TOP_LPUART1_RX      0x31e
 			IMX95_PAD_UART1_TXD__AONMIX_TOP_LPUART1_TX      0x31e
 		>;
+	};
+
+	pinctrl_lpi2c8: lpi2c8grp {
+		fsl,pins = <
+			IMX95_PAD_GPIO_IO13__LPI2C8_SCL   0x1fe
+			IMX95_PAD_GPIO_IO12__LPI2C8_SDA   0x1fe
+		>;
+	};
+
+	pinctrl_se052f: se052fgrp {
+		fsl,pins = <
+			IMX95_PAD_GPIO_IO34__GPIO5_IO_BIT14   0x31e
+ 		>;
 	};
 
 	pinctrl_lpi2c3: lpi2c3grp {
