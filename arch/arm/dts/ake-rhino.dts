@@ -18,7 +18,10 @@
 
 / {
 	model = "Akkodis Edge Rhino";
-	compatible = "ake,rhino", "fsl,imx95";
+	/* compatible placeholder will be set by boards model detection.
+	 * The placeholder must have same size as it's intended replacement.
+	 * See board/akkodis/rhino.c */
+	compatible = "fsl,imx95", "ake,place";
 
 	chosen {
 		stdout-path = &lpuart1;
@@ -221,7 +224,25 @@
 	status = "okay";
 };
 
+&gpio4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_gpio4_hog>;
+
+	rhino_detect {
+		gpio-hog;
+		input;
+		gpios = <29 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+
 &scmi_iomuxc {
+	pinctrl_gpio4_hog: gpiohog4grp {
+		fsl,pins = <
+			IMX95_PAD_CCM_CLKO4__GPIO4_IO_BIT29 0X1fe
+		>;
+	};
+
 	pinctrl_emdio: emdiogrp{
 		fsl,pins = <
 			IMX95_PAD_ENET1_MDC__NETCMIX_TOP_NETC_MDC		0x57e
